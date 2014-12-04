@@ -1,0 +1,5 @@
+pip:
+python get-pip.py
+
+https://github.com/docopt/docopt
+pip install docopt==0.6.1
