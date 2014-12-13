@@ -3,12 +3,14 @@ Created on 2014-12-03
 
 @author: Administrator
 '''
+import time
+
 # DB Config
 DB_CONFIG = {'user'  : 'admin', 
              'passwd': 'admin',
-             'host'  : '192.168.126.13', 
+             'host'  : '192.168.126.8', 
              'port'  : 3306, 
-             'db'    : 'record'}
+             'db'    : 'monitor'}
 
 DB_CONFIG_USER={}
 
@@ -68,6 +70,8 @@ def errlog(message, redirct=None):
     '''
     Print general log to tty Or log
     '''
+    message = "[%s]Error: %s.\n" % (time.strftime('%Y-%m-%d %H:%M:%S'), message)
+    
     if redirct is None:
         if __logerror__ is None: # write to tty
             _output2tty(message)

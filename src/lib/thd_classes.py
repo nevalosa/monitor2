@@ -27,7 +27,9 @@ class THD(object):
         
     def getMySQLCoon(self):
         return self._mysqlCoon
-        
+    
+    def getResource(self):
+        return self._resource
         
     
         

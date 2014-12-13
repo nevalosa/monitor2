@@ -90,7 +90,7 @@ class Consumer(object):
             try:
                 self._mng.get(self._msg)
             except Exception, e:
-                errmsg = String(e)
+                errmsg = str(e)
                 errlog(errmsg)
                 return None
             return self._msg.body

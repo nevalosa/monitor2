@@ -3,8 +3,28 @@ Created on 2014-11-28
 
 @author: Administrator
 '''
-import _mysql
+
 import db_mysql
+import json
+
+from my_global import *
+
+def getMessageType(resource):
+    try:
+        jsonObj = json.loads(str(resource))
+    except  Exception,e:
+        errmsg = "Message is not valid json"
+        errlog(errmsg)
+        return False
+    
+    try:
+        messageType = jsonObj['type']
+    except Exception,e:
+        errmsg = "Type does not exist in the Json Message"
+        errlog(errmsg)
+        return False
+    return messageType
+    
 
 def msg_push_parse(thd):
     '''
@@ -32,6 +52,24 @@ def msg_data_parse(thd):
     else:
         pass
     
+def msg_apprec_parse(thd):
+    '''
+    msg_data_parse Function
+    '''
+    print "I'm the msg_data_parse function(lib/msg_parse.py)."
+    # detail parse
+    jsonObj = json.loads(str(thd.getResource()))
+    
+    try:
+        msgContent = jsonObj['content']
+        model = db_mysql.Model(msgContent['obj_name'])
+        model.add(msgContent['values'])
+    except Exception,e:
+        errmsg = "Json Parse Error"
+        errlog(errmsg)
+        return False
+    
+    
 
 def dispatch_message(messageType, thd):
     '''
@@ -41,9 +79,11 @@ def dispatch_message(messageType, thd):
     if   'PUSH' == messageType:
         pass
     elif 'DATA' == messageType:
-        msg_data_parse(thd)
         pass
     elif 'ALERT' == messageType:
+        pass
+    elif 'APP_RECORD' == messageType:
+        msg_apprec_parse(thd)
         pass
     else:
         pass
@@ -57,10 +97,13 @@ def parse_message(thd):
     print thd._resource
     
     # Get message type
-    messageType = 'PUSH'
-    messageType = 'DATA'
-    messageType = 'ALERT'
-    
+    messageType = getMessageType(thd.getResource())
+    #messageType = 'PUSH'
+    #messageType = 'DATA'
+    #messageType = 'ALERT'
+    if False == messageType:
+        return False
+        
     dispatch_message(messageType, thd)
     pass
 

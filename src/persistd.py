@@ -33,7 +33,7 @@ from lib import db_mysql
 from lib import my_global
 from lib import msg_parse
 from lib import thd_classes
-from lib import amqp_consumer
+#from lib import amqp_consumer
 
 # Third libs
 try:
@@ -131,13 +131,18 @@ def handle_messagequeue_messags():
         #dev#message = amqpCnsumer.getMsg()
         message = '''
 {
-    "type": "DATA_RECORD",
+    "type": "APP_RECORD",
     "content": {
-        "user_online": 3,
-        "user_max": 15
+        "obj_name":"apprec_sip_register_num",
+        "values": {
+            "real_time":"2014-12-13 12:12:15",
+            "type":0,
+            "register_type_id":0,
+            "num":108
+        }
     },
-    "source": "",
-    "time": "2014-12-0412: 12: 15"
+    "from": "",
+    "time": "2014-12-04 12:12:15"
 }
         
         ''' 
@@ -151,7 +156,7 @@ def handle_messagequeue_messags():
         except:
             traceback.print_exc() 
         num+=1 #dev 
-        if num>1:#dev
+        if num>0:#dev
             break #dev
   
     # block until all tasks are done

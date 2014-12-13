@@ -7,7 +7,7 @@ import sys
 import traceback
 import types
 
-from lib.my_global import *
+from my_global import *
 
 import _mysql
 import _mysql_exceptions 
