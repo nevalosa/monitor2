@@ -33,7 +33,7 @@ from lib import db_mysql
 from lib import my_global
 from lib import msg_parse
 from lib import thd_classes
-
+from lib import amqp_consumer
 
 # Third libs
 try:
@@ -125,8 +125,10 @@ def handle_messagequeue_messags():
         new_thread.start()
     
     num = 0 #dev
+    #dev#amqpConsumer = amqp_consumer.Consumer()
     while(True):
         # Get Msg From MQ
+        #dev#message = amqpCnsumer.getMsg()
         message = '''
 {
     "type": "DATA_RECORD",
