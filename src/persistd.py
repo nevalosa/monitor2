@@ -85,7 +85,7 @@ def create_new_thread():
     '''
     global THD_QUEUE
     curThread = threading.current_thread()
-    print  "%s I'm the create new thread function(Main.py)." % curThread
+    print  "%s I'm the create new thread function(Main.py)." % curThread #dev#
 
     # Database 
     MySQLCoon = db_mysql.connect(my_global.DB_CONFIG)
@@ -98,7 +98,7 @@ def create_new_thread():
         try:
             thd = THD_QUEUE.get(block=True, timeout=None)
         except Queue.Empty:
-            print "Queue is empty"
+            print "Queue is empty" #dev#
             continue
         except:
             traceback.print_exc() 
@@ -117,7 +117,7 @@ def handle_messagequeue_messags():
     Handle the MQ messages
     '''
     global THD_QUEUE
-    print "I'm the handle MQ msg function(Main.py)."
+    print "I'm the handle MQ msg function(Main.py)." #dev#
     
     for i in range(__thread_concurrency__):
         new_thread = threading.Thread(target=create_new_thread)
@@ -130,6 +130,23 @@ def handle_messagequeue_messags():
         # Get Msg From MQ
         #dev#message = amqpCnsumer.getMsg()
         message = '''
+{
+    "type": "APP_RECORD",
+    "content": {
+        "obj_name":"apprec_sip_register_num",
+        "values": {
+            "type":0,
+            "register_type_id":0,
+            "num":108
+        }
+    },
+    "from": "",
+    "time": "2014-12-04 12:12:15"
+}
+        
+        ''' 
+        
+        '''
 {
     "type": "APP_RECORD",
     "content": {
@@ -151,7 +168,7 @@ def handle_messagequeue_messags():
         try:
             THD_QUEUE.put(thd, block=False, timeout=None)
         except Queue.Full:
-            print "Quere is full."
+            print "Quere is full." #dev#
             continue
         except:
             traceback.print_exc() 
@@ -171,7 +188,7 @@ def main(args=None):
     
     try:
         # Setup argument parser
-        print "I'm the master threads(Main.py)."
+        print "I'm the master threads(Main.py)." #dev#
         
         #Base config
         program_name = os.path.basename(sys.argv[0])
@@ -189,7 +206,7 @@ def main(args=None):
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###
         
-        print ("User Interrupt Catched.")
+        print ("User Interrupt Catched.") #dev#
         return 0
     except Exception, e:
         

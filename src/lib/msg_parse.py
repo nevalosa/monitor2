@@ -30,7 +30,7 @@ def msg_push_parse(thd):
     '''
     msg_push_parse Function
     '''
-    print "I'm the msg push parse function(lib/msg_parse.py)."
+    print "I'm the msg push parse function(lib/msg_parse.py)." #dev#
     # detail parse
     datatype = 'user count'
     if 'user count' == datatype:
@@ -43,7 +43,7 @@ def msg_data_parse(thd):
     '''
     msg_data_parse Function
     '''
-    print "I'm the msg_data_parse function(lib/msg_parse.py)."
+    print "I'm the msg_data_parse function(lib/msg_parse.py)." #dev#
     # detail parse
     datatype = 'user count'
     if 'user count' == datatype:
@@ -56,16 +56,19 @@ def msg_apprec_parse(thd):
     '''
     msg_data_parse Function
     '''
-    print "I'm the msg_data_parse function(lib/msg_parse.py)."
+    print "I'm the msg_data_parse function(lib/msg_parse.py)." #dev#
     # detail parse
     jsonObj = json.loads(str(thd.getResource()))
     
     try:
+        # Get Message Body
         msgContent = jsonObj['content']
-        model = db_mysql.Model(msgContent['obj_name'])
+        # New Table ORM
+        model = db_mysql.Model(msgContent['obj_name'],thd.getMySQLCoon())
+        # <Dict>msgContent['values'] As value
         model.add(msgContent['values'])
     except Exception,e:
-        errmsg = "Json Parse Error"
+        errmsg = "Json Parse Error (%s)" % e
         errlog(errmsg)
         return False
     
@@ -75,7 +78,7 @@ def dispatch_message(messageType, thd):
     '''
     dispatch_message Function
     '''
-    print "I'm the dispatch_message function(lib/msg_parse.py)."
+    print "I'm the dispatch_message function(lib/msg_parse.py)." #dev#
     if   'PUSH' == messageType:
         pass
     elif 'DATA' == messageType:
@@ -92,9 +95,9 @@ def parse_message(thd):
     '''
     parse_message Function
     '''
-    print "I'm the parse_message function(lib/msg_parse.py)."
+    print "I'm the parse_message function(lib/msg_parse.py)." #dev#
     
-    print thd._resource
+    print thd._resource #dev#
     
     # Get message type
     messageType = getMessageType(thd.getResource())
@@ -111,7 +114,7 @@ def handle_one_message(thd):
     '''
     handle one message
     '''
-    print "I'm the handle one message function(lib/msg_parse.py)."
+    print "I'm the handle one message function(lib/msg_parse.py)." #dev#
     parse_message(thd)
     #
     #end thread(thd)

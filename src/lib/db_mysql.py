@@ -283,7 +283,7 @@ class Model(object):
         # Check Type
         argsType = type(self._data)
         if argsType == types.DictType: 
-            # Convert Dict to String
+            # Good,Next Step is Converting Dict to String
             pass
         else:
             functionName = sys._getframe().f_code.co_name
@@ -307,7 +307,7 @@ class Model(object):
         
         sql = "%s INTO %s(%s) VALUES(%s)" \
             % (_replace, self._tableName, keys, values)
-        
+
         result = self.execute(sql)
         
         if result: # Execute Succeed
