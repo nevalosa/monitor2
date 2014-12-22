@@ -26,17 +26,24 @@ import _mysql_exceptions
 
 DefaultDBCoon = None
 
-def connect(DB_CONFIG):
+def connect(DB_CONFIG=None, user=None, passwd=None, host=None, port=None, db=None):
     '''
     
     '''
     
     try:
-        conn = _mysql.connect(user=DB_CONFIG['user'], 
+        if DB_CONFIG is not None:
+            conn = _mysql.connect(user=DB_CONFIG['user'], 
                               passwd=DB_CONFIG['passwd'], 
                               host=DB_CONFIG['host'], 
                               port=DB_CONFIG['port'], 
                               db=DB_CONFIG['db'])
+        else:
+            conn = _mysql.connect(user=user,
+                                passwd=passwd,
+                                host=host,
+                                port=port,
+                                db=db)
     except _mysql_exceptions.Error, e:
         errmsg = "MySQL Error: %d %s" % (e.args[0], e.args[1])
         errlog(errmsg)
@@ -297,7 +304,7 @@ class Model(object):
 
         for (key, val) in self._data.items():
 #            print type(val)
-            tmpval = str(val) 
+            tmpval = _mysql.escape_string(str(val)) 
 
             if keys != '':
                 keys = keys + ','
@@ -387,7 +394,7 @@ class Model(object):
 
         for (key, val) in self._data.items():
 #            print type(val)
-            tmpval = str(val) 
+            tmpval = _mysql.escape_string(str(val)) 
             if sets != '':
                 sets = sets + ','
             sets = sets + key + "='" + tmpval + "'" 
