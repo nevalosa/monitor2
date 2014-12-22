@@ -67,7 +67,7 @@ class Daemonize(object):
                 sys.exit(0)
 
         fork_then_exit_parent()
-
+    
         # Magic two fork process, see Steven's APUE
         fork_then_exit_parent()
 
@@ -82,12 +82,17 @@ class Daemonize(object):
         #os.chdir("/")
 
         # Close all file descriptors
+        '''
         for fd in range(resource.getrlimit(resource.RLIMIT_NOFILE)[0]):
             try:
                 os.close(fd)
-            except OSError:
+            except OSError,e:
+                print "OS Error"
                 pass
-
+            except Exception,e:
+                print e
+                pass
+        '''
         os.open(os.devnull, os.O_RDWR)
 
         # Create a lockfile so that only one instance of this daemon is running at any time.
@@ -107,8 +112,8 @@ class Daemonize(object):
         lockfile.flush()
 
         # Set custom action on SIGTERM.
-        signal.signal(signal.SIGTERM, self.sigterm)
-        atexit.register(self.sigterm)
+        #signal.signal(signal.SIGTERM, self.sigterm)
+        #atexit.register(self.sigterm)
         #self.logger.warn("Starting daemon.")
 
         self.action(self.args)

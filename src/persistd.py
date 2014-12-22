@@ -123,13 +123,14 @@ def handle_messagequeue_messags():
         new_thread = threading.Thread(target=create_new_thread)
         new_thread.daemon = True
         new_thread.start()
-    
-    num = 0 #dev
-    #dev#amqpConsumer = amqp_consumer.Consumer()
-    while(True):
-        # Get Msg From MQ
-        #dev#message = amqpCnsumer.getMsg()
-        message = '''
+   
+    if DEBUG:
+        num = 0 #dev
+        #dev#amqpConsumer = amqp_consumer.Consumer()
+        while(True):
+            # Get Msg From MQ
+            #dev#message = amqpCnsumer.getMsg()
+            message = '''
 {
     "type": "APP_RECORD",
     "content": {
@@ -144,38 +145,36 @@ def handle_messagequeue_messags():
     "time": "2014-12-04 12:12:15"
 }
         
-        ''' 
+            ''' 
         
-        '''
-{
-    "type": "APP_RECORD",
-    "content": {
-        "obj_name":"apprec_sip_register_num",
-        "values": {
-            "real_time":"2014-12-13 12:12:15",
-            "type":0,
-            "register_type_id":0,
-            "num":108
-        }
-    },
-    "from": "",
-    "time": "2014-12-04 12:12:15"
-}
-        
-        ''' 
-        thd = thd_classes.THD(resource=message)
-        # Put resourc into Process Queue 
-        try:
-            THD_QUEUE.put(thd, block=False, timeout=None)
-        except Queue.Full:
-            print "Quere is full." #dev#
-            continue
-        except:
-            traceback.print_exc() 
-        num+=1 #dev 
-        if num>0:#dev
-            break #dev
-  
+            thd = thd_classes.THD(resource=message)
+            # Put resourc into Process Queue 
+            try:
+                THD_QUEUE.put(thd, block=False, timeout=None)
+            except Queue.Full:
+                print "Quere is full." #dev#
+                continue
+            except:
+                traceback.print_exc() 
+            num+=1 #dev 
+            if num>0:#dev
+                break #dev
+    else:
+        from lib import amqp_consumer
+        amqpConsumer = amqp_consumer.Consumer()
+        while(True):
+            # Get Msg From MQ
+            message = amqpConsumer.getMsg()
+            thd = thd_classes.THD(resource=message)
+            # Put resourc into Process Queue 
+            try:
+                THD_QUEUE.put(thd, block=False, timeout=None)
+            except Queue.Full:
+                print "Quere is full." #dev#
+                continue
+            except:
+                traceback.print_exc() 
+ 
     # block until all tasks are done
     THD_QUEUE.join()
    
