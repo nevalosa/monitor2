@@ -2,17 +2,48 @@
 -- 表的结构 `info_filesystem`
 --
 
-DROP TABLE IF EXISTS `info_filesystem`;
-CREATE TABLE IF NOT EXISTS `info_filesystem` (
-  `filesystem_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `host_id` int(11) NOT NULL,
-  `filesystem_name` varchar(128) DEFAULT NULL COMMENT '文件系统名称',
-  `mounted_on` varchar(128) DEFAULT NULL COMMENT '挂载路径',
-  `total_size` decimal(20,2) DEFAULT NULL COMMENT '目录大小(MB)',
-  `used_size` decimal(20,2) DEFAULT NULL COMMENT '已用大小(MB)',
-  `space_used_percent` decimal(5,2) DEFAULT NULL COMMENT 'space已用百分比 示例：78.99',
-  `gmt_create` datetime NOT NULL COMMENT '插入时间',
-  `gmt_update` datetime DEFAULT NULL COMMENT '更新时间',
-  PRIMARY KEY (`filesystem_id`),
-  KEY `host_id` (`host_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='文件系统磁盘巡检统计表' AUTO_INCREMENT=2 ;
+drop table `apprec_conf`;
+CREATE TABLE `apprec_conf` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'PRIMARY KEY',
+  `real_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `type` int(11) NOT NULL DEFAULT '0' COMMENT 'Collect Type: 0 (normal:real value),2 (day:Average of 24Hours),3 (week:Average of 7days),4 (month:Average of 30Days)',
+  `conf_sernum` varchar(32) NOT NULL COMMENT 'conference serial number',
+  `num` int(11) NOT NULL DEFAULT '0' COMMENT 'attendance of a conference',
+  PRIMARY KEY (`id`),
+  KEY `search` (`real_time`,`type`,`conf_sernum`,`num`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Real time information of a conference';
+
+drop table `apprec_conf_amount`;
+CREATE TABLE `apprec_conf_amount` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'PRIMARY KEY',
+  `real_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `type` int(11) NOT NULL DEFAULT '0' COMMENT 'Collect Type: 0 (normal:real value),2 (day:Average of 24Hours),3 (week:Average of 7days),4 (month:Average of 30Days)',
+  `num` int(11) NOT NULL DEFAULT '0' COMMENT 'Amount of all conference which is in progress',
+  PRIMARY KEY (`id`),
+  KEY `search` (`real_time`,`type`,`num`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Amount of Conference which is in progress';
+
+# Sip的注册用户统计
+drop table `apprec_sip_register_num`;
+CREATE TABLE `apprec_sip_register_num` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'PRIMARY KEY',
+  `real_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `type` int(11) NOT NULL DEFAULT '0' COMMENT 'Collect Type: 0 (normal:real value),2 (day:Average of 24Hours),3 (week:Average of 7days),4 (month:Average of 30Days)',
+  `register_type_id` int(11) NOT NULL DEFAULT '0' COMMENT 'register_type_id: 0(total)',
+  `num` int(11) NOT NULL DEFAULT '0' COMMENT 'Amount of sip register',
+  PRIMARY KEY (`id`),
+  KEY `search` (`real_time`,`type`,`register_type_id`,`num`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='Amount of Sip Register User';
+
+# Web界面的用户统计
+drop table `apprec_web_user_num`;
+CREATE TABLE `apprec_web_user_num` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'PRIMARY KEY',
+  `real_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `type` int(11) NOT NULL DEFAULT '0' COMMENT 'Collect Type: 0 (normal:real value),2 (day:Average of 24Hours),3 (week:Average of 7days),4 (month:Average of 30Days)',
+  `register_user` int(11) NOT NULL DEFAULT '0' COMMENT 'amount of register user',
+  `guest_user` int(11) NOT NULL DEFAULT '0' COMMENT 'amount of guest user',
+  PRIMARY KEY (`id`),
+  KEY `search` (`real_time`,`type`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='Amount of web User';
+

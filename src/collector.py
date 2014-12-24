@@ -57,7 +57,7 @@ __pidfile__     = '/tmp/collector.pid'
 ''' Access log path '''
 __logaccess__   = '/var/log/collector.log'
 ''' Number of concurrency threads '''
-__thread_concurrency__ = 2
+__thread_concurrency__ = 1
 ''' Max queue size of received messages from MQ Server, Zero means unlimit '''
 __mq_queue_size__ = 0 
 

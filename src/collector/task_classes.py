@@ -5,20 +5,30 @@ Created on 2014-12-02
 '''
 
 import Queue
+import socket
 import threading
 import traceback
+
+from lib import common
+from tasks import tasklist
 
 class Task(object):
     '''
     classdocs
     '''
 
-    def __init__(self, taskName=None, resource=tuple(), interval=1, THD_QUEUE=Queue.Queue()):
+    def __init__(self, task=None, resource=dict(), interval=1, THD_QUEUE=Queue.Queue()):
         '''
         Constructor
         '''
-        self._taskName = taskName
+        self._taskMsgType     = task['type']
+        self._taskModuleName  = task['module']
+        self._taskFuncName    = task['func']
+        
+        self._interval = interval
+        
         self._resource = resource
+        
         self._THD_QUEUE = THD_QUEUE
         
         
@@ -33,13 +43,17 @@ class Task(object):
     
     def _task_processor(self):
         #run task
-        from tasks.APP_RECORD.max_sip_register_num import max_sip_register_num
-        (msgType, objMsgBody) = max_sip_register_num()
+        taskModlue = __import__(("tasks.%s.%s" % (self._taskMsgType, self._taskModuleName)), globals(), locals(), self._taskFuncName)
+        #print dir(taskModlue)
+        taskFunc = getattr(taskModlue, self._taskFuncName)
+
+        objMsgBody = taskFunc()
         
+        # Make Message
         objMsg = dict()
-        objMsg["type"] = msgType
-        objMsg["from"] = ""
-        objMsg["time"] = "2014-12-04 12:12:15"
+        objMsg["type"] = self._taskMsgType
+        objMsg["from"] = common.getHostName()
+        objMsg["time"] = common.now()
         objMsg["content"] = objMsgBody
         
         try:
@@ -49,9 +63,12 @@ class Task(object):
         except:
             traceback.print_exc() 
         pass
-    
+
+        
+        
 def runTaskList(THD_QUEUE=Queue.Queue()):
-     task1 = Task(taskName="max_sip_register_num", resource=["a","b"] , interval=0, THD_QUEUE=THD_QUEUE)
-     task1.run()
+    for taskInfo in tasklist.tasklist:
+        task = Task(task=taskInfo, resource=['192.168.126.8'], interval=10, THD_QUEUE=THD_QUEUE)
+        task.run()
      
      

@@ -4,8 +4,9 @@ Created on 2014-12-22
 @author: Administrator
 '''
 import time
+import socket
 
-
+''' User Defined '''    
 # Common Functions
 def _output2tty(message):
     print message
@@ -55,11 +56,23 @@ def errlog(message, redirct=None):
     else:
         return
     
-def msg_add_basic_info(msgBody=None):
-    msg = '''
-    
-    ''' % msgBody 
-    pass
+def fillMsgBody(objName, values):
+    msgBody = dict()
+    msgBody["obj_name"] = objName
+    msgBody["values"] = values
+    return msgBody
+
+''' System '''    
+def now():
+    return time.strftime('%Y-%m-%d %H:%M:%S')
+
+def getHostName():
+    return socket.gethostname()
+
+def getHostIP():
+    return socket.gethostbyname(socket.gethostname())
+
+
 
 # Dev Code
 if __name__ == '__main__':

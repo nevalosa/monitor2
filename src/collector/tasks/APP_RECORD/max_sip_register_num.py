@@ -6,6 +6,8 @@ Created on 2014-12-22
 
 from lib import db_mysql
 
+MSG_TYPE = "APP_RECORD"
+
 DBCoon = db_mysql.connect(user='admin', passwd='admin', 
                         host='192.168.126.8', port=3306, db='monitor')
 
@@ -24,7 +26,6 @@ def max_sip_register_num():
 
     # Create Model    
     mSipRegisterNum = db_mysql.Model('apprec_sip_register_num')
-    
-    
-    
+
     return ("APP_RECORD", msgBody)
+
