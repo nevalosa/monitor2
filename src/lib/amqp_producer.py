@@ -21,25 +21,56 @@ import time
 
 from proton import *
 
-user = os.getenv('ACTIVEMQ_USER') or 'admin'
-password = os.getenv('ACTIVEMQ_PASSWORD') or 'password'
-host = os.getenv('ACTIVEMQ_HOST') or '127.0.0.1'
-port = int(os.getenv('ACTIVEMQ_PORT') or 5672)
-destination = sys.argv[1:2] or ['topic://event']
-destination = destination[0]
-address = "amqp://%s@%s:%d/%s"%(user, host, port, destination)
+def example():
+    user = os.getenv('ACTIVEMQ_USER') or 'admin'
+    password = os.getenv('ACTIVEMQ_PASSWORD') or 'password'
+    host = os.getenv('ACTIVEMQ_HOST') or '127.0.0.1'
+    port = int(os.getenv('ACTIVEMQ_PORT') or 5672)
+    destination = sys.argv[1:2] or ['topic://event']
+    destination = destination[0]
+    address = "amqp://%s@%s:%d/%s"%(user, host, port, destination)
+    
+    msg = Message()
+    mng = Messenger()
+    mng.password=password
+    mng.start()
+    
+    
+    msg.address = address
+    
+    msgContent = '''Hello World'''
+    msg.body = unicode(msgContent)
+    mng.put(msg)
+    mng.send()
+    
+    mng.stop()
+    pass
 
-msg = Message()
-mng = Messenger()
-mng.password=password
-mng.start()
+class Productor(object):
+    '''
+    Amqp Productor
+    '''
+    def __init__(self, user='admin', password='password', host='127.0.0.1', port=5672, destination='topic://event'):
+        ''' 
+        Constructor
+        '''
+        self._msg = Message()
+        self._mng = Messenger()
 
+        self._mng.password=password
+        self._mng.start()
+        self._msg.address = "amqp://%s@%s:%d/%s"%(user, host, port, destination)
 
-msg.address = address
-
-msgContent = '''Hello World'''
-msg.body = unicode(msgContent)
-mng.put(msg)
-mng.send()
-
-mng.stop()
+    def sendMsg(self, message):
+        '''
+        Get Message From Amqp 1.0
+        '''
+        try:
+            self._msg.body = unicode(message)
+            self._mng.put(msg)
+            self._mng.send()
+        except Exception, e:
+            errmsg = str(e)
+            errlog(errmsg)
+            return False
+        return True

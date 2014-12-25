@@ -20,6 +20,7 @@ Options:
 """
 
 # System libs
+import json
 import os
 import Queue
 import sys
@@ -103,7 +104,11 @@ def handle_collecting_tasks():
             print msg
         else:
             from lib import amqp_producer
-            # Send Message
+            amqpProductor = amqp_producer.Productor()
+            # Convert Dict Msg to Json String
+            jSonStrMsg = json.dumps(msg)
+            # Send Msg to MQ
+            amqpProductor.sendMsg(jSonStrMsg)
         
         # Queue Recycle
         THD_QUEUE.task_done()
