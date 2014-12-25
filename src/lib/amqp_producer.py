@@ -71,6 +71,6 @@ class Productor(object):
             self._mng.send()
         except Exception, e:
             errmsg = str(e)
-            errlog(errmsg)
+            #errlog(errmsg)
             return False
         return True
