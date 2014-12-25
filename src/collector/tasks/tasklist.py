@@ -5,14 +5,14 @@ Created on 2014-12-02
 '''
 
 tasklist = [
-   {"type"     :"APP_RECORD",
-    "module"   :"user", 
-    "func"     :"web_register_num",
-    "interval" :5 },
+#   {"type"     :"APP_RECORD",
+#    "module"   :"user", 
+#    "func"     :"web_register_num",
+#    "interval" :5 },
 
    {"type"     :"APP_RECORD",
     "module"   :"user", 
     "func"     :"daily_sip_register",
-    "interval" :86400 },
+    "interval" :1 },
 ]
             

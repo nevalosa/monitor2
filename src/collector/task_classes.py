@@ -9,6 +9,7 @@ import socket
 import threading
 import time
 import traceback
+import types
 
 from lib import common
 from tasks import tasklist
@@ -52,24 +53,60 @@ class Task(object):
         taskFunc = getattr(taskModlue, self._taskFuncName)
 
         while(True):
+            # Sleep first, then run!
+            time.sleep(self._interval)
+                
+            # Run task
             objMsgBody = taskFunc()
+            
+            if objMsgBody is None:
+                continue
+            elif objMsgBody == False:
+                print "task error, thread exit"
+                break
         
             # Make Message
-            objMsg = dict()
-            objMsg["type"] = self._taskMsgType
-            objMsg["from"] = common.getHostName()
-            objMsg["time"] = common.now()
-            objMsg["content"] = objMsgBody
-        
-            try:
-                self._THD_QUEUE.put(objMsg, block=False, timeout=None)
-            except Queue.Full:
-                print "Quere is full." #dev#
-            except:
-                traceback.print_exc() 
-            finally:
-                time.sleep(self._interval)
-
+            msgBodyType = type(objMsgBody)
+            if msgBodyType == types.DictType:
+                ''' type is dict ,direct insert into Queue '''
+                objMsg = self._addMsgCommonInfo(objMsgBody)
+                self._putMsg2Queue(objMsg)
+            elif msgBodyType == types.ListType:
+                ''' type is a List of dict, insert each one into Queue '''
+                for realObjMsgBody in objMsgBody:
+                    objMsg = self._addMsgCommonInfo(realObjMsgBody)
+                    self._putMsg2Queue(objMsg)
+            
+        #=======================================================================
+        #     objMsg = dict()
+        #     objMsg["type"] = self._taskMsgType
+        #     objMsg["from"] = common.getHostName()
+        #     objMsg["time"] = common.now()
+        #     objMsg["content"] = objMsgBody
+        # 
+        #     try:
+        #         self._THD_QUEUE.put(objMsg, block=False, timeout=None)
+        #     except Queue.Full:
+        #         print "Quere is full." #dev#
+        #     except:
+        #         traceback.print_exc()
+        #=======================================================================
+    
+    def _addMsgCommonInfo(self,objMsgBody):
+        objMsg = dict()
+        objMsg["type"] = self._taskMsgType
+        objMsg["from"] = common.getHostName()
+        objMsg["time"] = common.now()
+        objMsg["content"] = objMsgBody
+        return objMsg
+                
+    def _putMsg2Queue(self,objMsg):
+        try:
+            self._THD_QUEUE.put(objMsg, block=False, timeout=None)
+        except Queue.Full:
+            print "Quere is full." #dev#
+        except:
+            traceback.print_exc()
         
         
 def runTaskList(THD_QUEUE=Queue.Queue()):

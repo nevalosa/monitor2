@@ -228,6 +228,8 @@ class Model(object):
         result = self.select()
         if result is None:
             return None
+        elif result == False:
+            return False
         else:
             return result[0]
     
@@ -254,6 +256,12 @@ class Model(object):
 
         #print sql
         result = self.query(sql)
+        
+        if result == False:
+            return False
+        elif result is None:
+            return None
+        
         try:
             result[0]
         except Exception, e:

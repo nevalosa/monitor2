@@ -3,6 +3,7 @@ Created on 2014-12-22
 
 @author: Administrator
 '''
+import datetime
 import time
 import socket
 
@@ -56,7 +57,7 @@ def errlog(message, redirct=None):
     else:
         return
     
-def fillMsgBody(objName, values):
+def fillMsgData(objName, values):
     msgBody = dict()
     msgBody["obj_name"] = objName
     msgBody["values"] = values
@@ -65,6 +66,11 @@ def fillMsgBody(objName, values):
 ''' System '''    
 def now():
     return time.strftime('%Y-%m-%d %H:%M:%S')
+
+def lastday():
+    today = datetime.date.today() 
+    yesterday = today - datetime.timedelta(days=1)
+    return yesterday
 
 def getHostName():
     return socket.gethostname()
