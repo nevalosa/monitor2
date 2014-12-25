@@ -108,6 +108,7 @@ def handle_collecting_tasks():
             # Convert Dict Msg to Json String
             jSonStrMsg = json.dumps(msg)
             # Send Msg to MQ
+            print jSonStrMsg
             amqpProductor.sendMsg(jSonStrMsg)
         
         # Queue Recycle
