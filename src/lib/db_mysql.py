@@ -122,6 +122,7 @@ class Model(object):
         result = False
         
         try:    
+            print sql
             self._conn.query(sql)
             self._conn.store_result()
             result = True

@@ -165,6 +165,7 @@ def handle_messagequeue_messags():
         while(True):
             # Get Msg From MQ
             message = amqpConsumer.getMsg()
+            print message
             thd = thd_classes.THD(resource=message)
             # Put resourc into Process Queue 
             try:

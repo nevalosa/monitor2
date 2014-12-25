@@ -7,6 +7,7 @@ Created on 2014-12-02
 import Queue
 import socket
 import threading
+import time
 import traceback
 
 from lib import common
@@ -26,8 +27,11 @@ class Task(object):
         self._taskFuncName    = task['func']
         
         self._interval = interval
-        
-        self._resource = resource
+       
+        if resource is None:
+            self._resource = [0]
+        else: 
+            self._resource = resource
         
         self._THD_QUEUE = THD_QUEUE
         
@@ -47,28 +51,35 @@ class Task(object):
         #print dir(taskModlue)
         taskFunc = getattr(taskModlue, self._taskFuncName)
 
-        objMsgBody = taskFunc()
+        while(True):
+            objMsgBody = taskFunc()
         
-        # Make Message
-        objMsg = dict()
-        objMsg["type"] = self._taskMsgType
-        objMsg["from"] = common.getHostName()
-        objMsg["time"] = common.now()
-        objMsg["content"] = objMsgBody
+            # Make Message
+            objMsg = dict()
+            objMsg["type"] = self._taskMsgType
+            objMsg["from"] = common.getHostName()
+            objMsg["time"] = common.now()
+            objMsg["content"] = objMsgBody
         
-        try:
-            self._THD_QUEUE.put(objMsg, block=False, timeout=None)
-        except Queue.Full:
-            print "Quere is full." #dev#
-        except:
-            traceback.print_exc() 
-        pass
+            try:
+                self._THD_QUEUE.put(objMsg, block=False, timeout=None)
+            except Queue.Full:
+                print "Quere is full." #dev#
+            except:
+                traceback.print_exc() 
+            finally:
+                time.sleep(self._interval)
 
         
         
 def runTaskList(THD_QUEUE=Queue.Queue()):
     for taskInfo in tasklist.tasklist:
-        task = Task(task=taskInfo, resource=['192.168.126.8'], interval=10, THD_QUEUE=THD_QUEUE)
+        interval = taskInfo['interval']
+        if taskInfo.has_key('resource'):
+            resource=taskInfo['resource']
+        else:
+            resource=None
+        task = Task(task=taskInfo, resource=resource, interval=interval, THD_QUEUE=THD_QUEUE)
         task.run()
      
      

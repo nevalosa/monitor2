@@ -61,16 +61,20 @@ class Productor(object):
         self._mng.start()
         self._msg.address = "amqp://%s@%s:%d/%s"%(user, host, port, destination)
 
+    def __del__(self):
+        self._mng.stop()
+
     def sendMsg(self, message):
         '''
         Get Message From Amqp 1.0
         '''
         try:
             self._msg.body = unicode(message)
-            self._mng.put(msg)
+            self._mng.put(self._msg)
             self._mng.send()
         except Exception, e:
             errmsg = str(e)
             #errlog(errmsg)
+            print errmsg
             return False
         return True
