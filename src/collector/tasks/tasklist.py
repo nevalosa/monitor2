@@ -13,6 +13,7 @@ tasklist = [
    {"type"     :"APP_RECORD",
     "module"   :"user", 
     "func"     :"daily_sip_register",
-    "interval" :1 },
+    "interval" :1,
+    "comment"  :"Daily max or min sip register", },
 ]
             
