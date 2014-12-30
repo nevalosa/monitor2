@@ -5,11 +5,12 @@ import os
 import sys
 import signal
 import resource
-#import logging
+import logging
 import atexit
 import time
-#from logging import handlers
 
+''' Log '''
+errlogger = logging.getLogger('error')
 
 class Daemonize(object):
     """ Daemonize object
@@ -146,7 +147,7 @@ class Daemonize(object):
                 if os.path.exists(self.pidfile):
                     os.remove(self.pidfile)
             else:
-                print str(err)
+                errlogger.exception("Daemon stop failed")
                 sys.exit(1)
 
     def restart(self):

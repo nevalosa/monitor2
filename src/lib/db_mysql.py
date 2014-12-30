@@ -3,29 +3,25 @@ Created on 2014-12-02
 
 @author: Administrator
 '''
+import logging
 import sys
-import traceback
 import types
 
-from my_global import *
-
-import _mysql
+try:
+    import _mysql
+except ImportError:
+    exit('This example requires that `MySQLdb` library'
+          'https://github.com/farcepest/MySQLdb1'
+          'doc: http://mysql-python.sourceforge.net/MySQLdb.html')
 import _mysql_exceptions 
 
-#===============================================================================
-# try:
-#     import MySQLdb
-# except ImportError:
-#     exit('This example requires that `MySQLdb` library'
-#          ' is installed: \n    yum install MySQL-python\n'
-#          'https://pypi.python.org/pypi/MySQL-python/1.2.5'
-#          'http://mysql-python.sourceforge.net/MySQLdb.html')
-#===============================================================================
+''' Log '''
+errlogger = logging.getLogger('error')
 
 
-
-DefaultDBCoon = None
-
+#################
+### Functions ###
+#################
 def connect(DB_CONFIG=None, user=None, passwd=None, host=None, port=None, db=None):
     '''
     
@@ -45,14 +41,16 @@ def connect(DB_CONFIG=None, user=None, passwd=None, host=None, port=None, db=Non
                                 port=port,
                                 db=db)
     except _mysql_exceptions.Error, e:
-        errmsg = "MySQL Error: %d %s" % (e.args[0], e.args[1])
-        errlog(errmsg)
+        errlogger.exception("MySQL connection error")
         return False
-    except:
-         traceback.print_exc() 
     
     return conn
       
+      
+###############
+### Classes ###
+###############
+
 class Model(object):
     '''
     classdocs
@@ -76,22 +74,18 @@ class Model(object):
         self._values = None
         
         # Initaize connection
-        if conn is None:
-            global DefaultDBCoon
-            self._conn = DefaultDBCoon
-        else:
-            self._conn = conn
+        self._conn = conn
         
         # Initaize SQL Variables
         self._initailize()
         
-        # Test connection
-        global DEBUG
-        if DEBUG:
-            try:
-                self._stat = self._conn.stat()
-            except:
-                traceback.print_exc()
+        # Test connection, Reconnect
+        #global DEBUG
+        #if DEBUG:
+        #    try:
+        #        self._stat = self._conn.stat()
+        #    except:
+        #        traceback.print_exc()
         
     def _initailize(self):
         # SELECT
@@ -113,22 +107,15 @@ class Model(object):
         '''
         Execute SQL without Return
         '''
-        #=======================================================================
-        # self._cursor=self._conn.cursor()
-        # self._cursor.execute("""SELECT spam, eggs, sausage FROM breakfast
-        #   WHERE price < %s""", (max_price,))
-        # pass
-        #=======================================================================
         result = False
         
         try:    
-            print sql
+            errlogger.debug("Execute SQL - \"%s\"" % sql)
             self._conn.query(sql)
             self._conn.store_result()
             result = True
         except _mysql_exceptions.Error, e:
-            errmsg = "MySQL Error: %d %s" % (e.args[0], e.args[1])
-            errlog(errmsg)
+            errlogger.exception("SQL execute error")
             result = False
         finally:
             self._initailize()
@@ -141,12 +128,12 @@ class Model(object):
         Query for Select
         '''  
         try:    
+            errlogger.debug("Execute SQL - \"%s\"" % sql)
             self._conn.query(sql)
             store_result = self._conn.store_result()
             result = store_result.fetch_row(maxrows=maxrows,how=how)
         except _mysql_exceptions.Error, e:
-            errmsg = "MySQL Error: %d %s" % (e.args[0], e.args[1])
-            errlog(errmsg)
+            errlogger.exception("SQL execute error")
             result = False
         finally:
             self._initailize()
@@ -254,7 +241,6 @@ class Model(object):
         if self._limit is not None:
             sql = "%s LIMIT %s" % (sql, self._limit)
 
-        #print sql
         result = self.query(sql)
         
         if result == False:
@@ -312,7 +298,6 @@ class Model(object):
         values = ''
 
         for (key, val) in self._data.items():
-#            print type(val)
             tmpval = _mysql.escape_string(str(val)) 
 
             if keys != '':
@@ -355,7 +340,6 @@ class Model(object):
         if self._limit is not None:
             sql = "%s LIMIT %s" % (sql, self._limit)
 
-        #print sql
         result = self.execute(sql)
         
         if result: # Execute Succeed
@@ -402,7 +386,6 @@ class Model(object):
         sets = ''
 
         for (key, val) in self._data.items():
-#            print type(val)
             tmpval = _mysql.escape_string(str(val)) 
             if sets != '':
                 sets = sets + ','

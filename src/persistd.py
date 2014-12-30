@@ -27,15 +27,12 @@ import Queue
 import sys
 import threading
 import time
-import traceback
-
 
 # My Libs
 from lib import common
 from lib import db_mysql
 from lib import msg_parse
 from lib import thd_classes
-#from lib import amqp_consumer
 
 # Third libs
 try:
@@ -77,8 +74,8 @@ __logerror_maxbytes__ = 100*1024*1024
 __logerror_num__ = 2
 
 ''' Log Format '''
-#LOG_FORMAT = '[%(asctime)s, "%(filename)s", line %(lineno)d]\n%(levelname)s: %(message)s'
-LOG_FORMAT = '%(asctime)s [%(levelname)s] %(message)s'
+LOG_FORMAT = '[%(asctime)s, "%(filename)s", line %(lineno)d] %(levelname)s: %(message)s'
+#LOG_FORMAT = '%(asctime)s [%(levelname)s] %(message)s'
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 ''' Number of concurrency threads '''
@@ -102,6 +99,7 @@ THD_QUEUE = None
 
 ''' Log '''
 errlogger = logging.getLogger('error')
+__loglevel__ = logging.DEBUG
 
 #################
 ### Functions ###
@@ -111,16 +109,23 @@ def log_init():
     # log: CRITICAL > ERROR > WARNING > INFO > DEBUG > NOTSET #
     logFormatter = logging.Formatter(LOG_FORMAT, DATE_FORMAT)
 
+    # Add error log handler 
     errlogger.setLevel(logging.DEBUG)
 
-    logRFHandler = logging.handlers.RotatingFileHandler( \
+    fileHandler = logging.handlers.RotatingFileHandler( \
         __logerror__, mode='a', maxBytes=__logerror_maxbytes__, \
         backupCount=__logerror_num__, encoding='utf8', delay=0)
-    logRFHandler.setLevel(logging.DEBUG)
-    logRFHandler.setFormatter(logFormatter)
+    fileHandler.setLevel(__loglevel__)
+    fileHandler.setFormatter(logFormatter)
 
-    errlogger.addHandler(logRFHandler)
-
+    errlogger.addHandler(fileHandler)
+    
+    # Add console log handler 
+    console = logging.StreamHandler()
+    console.setLevel(__loglevel__)
+    console.setFormatter(logFormatter)
+    
+    errlogger.addHandler(console)
 
 
 def server_init():
@@ -142,6 +147,8 @@ def create_new_thread():
 
     # Database 
     MySQLCoon = db_mysql.connect(DB_CONFIG)
+    if False == MySQLCoon:
+        sys.exit(2)
     
     while(True):
         # Init
@@ -151,10 +158,10 @@ def create_new_thread():
         try:
             thd = THD_QUEUE.get(block=True, timeout=None)
         except Queue.Empty:
-            print "Queue is empty" #dev#
+            errlogger.warning("Queue is empty")
             continue
         except:
-            traceback.print_exc() 
+            errlogger.exception("Queue getting error")
             
         # Prepare thd
         thd.setMySQLCoon(MySQLCoon)
@@ -170,16 +177,16 @@ def handle_messagequeue_messags():
     Handle the MQ messages
     '''
     global THD_QUEUE
-    print "I'm the handle MQ msg function(Main.py)." #dev#
     
+    errlogger.info("Building %d work threads" % __thread_concurrency__)
     for i in range(__thread_concurrency__):
         new_thread = threading.Thread(target=create_new_thread)
         new_thread.daemon = True
         new_thread.start()
-   
+    
+    errlogger.info("Waiting for message from MQ...")
     if DEBUG:
         num = 0 #dev
-        #dev#amqpConsumer = amqp_consumer.Consumer()
         while(True):
             # Get Msg From MQ
             #dev#message = amqpCnsumer.getMsg()
@@ -187,7 +194,7 @@ def handle_messagequeue_messags():
 {
     "type": "APP_RECORD",
     "content": {
-        "obj_name":"apprec_sip_register_num",
+        "obj_name":"apprec_user_sip_num",
         "values": {
             "type":0,
             "register_type_id":0,
@@ -199,16 +206,17 @@ def handle_messagequeue_messags():
 }
         
             ''' 
-        
+            errlogger.debug("Received message -\n%s" % message)
             thd = thd_classes.THD(resource=message)
             # Put resourc into Process Queue 
             try:
                 THD_QUEUE.put(thd, block=False, timeout=None)
             except Queue.Full:
-                print "Quere is full." #dev#
+                errlogger.warning("Thread resource Queue is full")
                 continue
             except:
-                traceback.print_exc() 
+                errlogger.exception("Thread resource Queue putting error")
+
             num+=1 #dev 
             if num>0:#dev
                 break #dev
@@ -218,29 +226,25 @@ def handle_messagequeue_messags():
         while(True):
             # Get Msg From MQ
             message = amqpConsumer.getMsg()
-            print message
+            errlogger.debug("Received message:\n%s" % message)
             thd = thd_classes.THD(resource=message)
+            
             # Put resourc into Process Queue 
             try:
                 THD_QUEUE.put(thd, block=False, timeout=None)
             except Queue.Full:
-                print "Quere is full." #dev#
+                errlogger.warning("Thread resource Queue is full")
                 continue
             except:
-                traceback.print_exc() 
+                errlogger.exception("Thread resource Queue putting error")
  
     # block until all tasks are done
     THD_QUEUE.join()
    
  
 def main(args=None):
-    ''' Main Function'''
-    #print(args)
-    
-    try:
-        # Setup argument parser
-        print "I'm the master threads(Main.py)." #dev#
-        
+    ''' Main Function'''    
+    try:     
         #Base config
         PROGRAM_NAME = os.path.basename(sys.argv[0])
         
@@ -252,23 +256,38 @@ def main(args=None):
         
         # Last time for the thread to finish their work 
         time.sleep(1)
-        return 0
+        pass
     
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###
-        
-        print ("User Interrupt Catched.") #dev#
-        return 0
+        errlogger.info("User Interrupt Catched")
+        pass
+    
     except Exception, e:
-        
-        indent = len(PROGRAM_NAME) * " "
-        sys.stderr.write(PROGRAM_NAME + ": " + repr(e) + "\n")
-        sys.stderr.write(indent + "  for help use --help")
-        return 2
+        errlogger.exception("Fatal error exiting")
+        #indent = len(PROGRAM_NAME) * " "
+        #sys.stderr.write(PROGRAM_NAME + ": " + repr(e) + "\n")
+        #sys.stderr.write(indent + "  for help use --help")
+        pass
     
     finally:
-        pass
+        _finish()
+        sys.exit(2)
   
+def _finish():
+    try:
+        pf = file(__pidfile__, 'r')
+        pid = int(pf.read().strip())
+        pf.close()
+    except:
+        pid = None
+        
+    if os.path.exists(__pidfile__):
+        os.remove(self.pidfile)
+        
+    errlogger.info("Daemon from pid file %s ended\n\n\n\n" % __pidfile__)
+    
+    return 0
 
 def load_ini_config():
     '''Load the initail config file '''
@@ -302,7 +321,10 @@ if __name__ == '__main__':
             schema.And(
                 str, schema.Use(str.lower), 
                 lambda s: s in ('start', 'stop', 'restart', 'status'), 
-                error='Action should be in start|stop|restart|status'
+                error='''Usage:
+    ./persistd --help
+    ./persistd [options] start|stop|restart|status
+'''
             ),
         '--debug':
             schema.And(
@@ -352,7 +374,8 @@ if __name__ == '__main__':
 
     # log 
     log_init()
-    errlogger.info(" %sing daemon from %s" % (args['ACTION'], os.getcwd()))   
+    errlogger.info("%sing daemon from %s" % \
+        (args['ACTION'][0].upper() + args['ACTION'][1:], os.getcwd()))   
 
     # Real Main Func in Daemon
     if DEBUG:

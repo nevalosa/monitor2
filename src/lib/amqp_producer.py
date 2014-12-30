@@ -15,11 +15,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+
+import logging
 import os
 import sys
 import time
 
 from proton import *
+
+''' Log '''
+errlogger = logging.getLogger('error')
 
 def example():
     user = os.getenv('ACTIVEMQ_USER') or 'admin'
@@ -73,8 +78,6 @@ class Productor(object):
             self._mng.put(self._msg)
             self._mng.send()
         except Exception, e:
-            errmsg = str(e)
-            #errlog(errmsg)
-            print errmsg
+            errlogger.exception("AMQP send failed")
             return False
         return True

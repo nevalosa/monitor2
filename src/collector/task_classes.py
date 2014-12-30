@@ -3,7 +3,7 @@ Created on 2014-12-02
 
 @author: Administrator
 '''
-
+import logging
 import Queue
 import socket
 import threading
@@ -13,6 +13,14 @@ import types
 
 from lib import common
 from tasks import tasklist
+
+''' Log '''
+errlogger = logging.getLogger('error')
+
+
+###############
+### Classes ###
+###############
 
 class Task(object):
     '''
@@ -49,7 +57,6 @@ class Task(object):
     def _task_processor(self):
         #run task
         taskModlue = __import__(("tasks.%s.%s" % (self._taskMsgType, self._taskModuleName)), globals(), locals(), self._taskFuncName)
-        #print dir(taskModlue)
         taskFunc = getattr(taskModlue, self._taskFuncName)
 
         while(True):
@@ -61,7 +68,7 @@ class Task(object):
             if objMsgBody is None:
                 continue
             elif objMsgBody == False:
-                print "task error, thread exit"
+                errlogger.error("Task function return error, thread exit")
                 break
         
             # Make Message
@@ -76,20 +83,6 @@ class Task(object):
                     objMsg = self._addMsgCommonInfo(realObjMsgBody)
                     self._putMsg2Queue(objMsg)
             
-        #=======================================================================
-        #     objMsg = dict()
-        #     objMsg["type"] = self._taskMsgType
-        #     objMsg["from"] = common.getHostName()
-        #     objMsg["time"] = common.now()
-        #     objMsg["content"] = objMsgBody
-        # 
-        #     try:
-        #         self._THD_QUEUE.put(objMsg, block=False, timeout=None)
-        #     except Queue.Full:
-        #         print "Quere is full." #dev#
-        #     except:
-        #         traceback.print_exc()
-        #=======================================================================
     
     def _addMsgCommonInfo(self,objMsgBody):
         objMsg = dict()
@@ -103,9 +96,9 @@ class Task(object):
         try:
             self._THD_QUEUE.put(objMsg, block=False, timeout=None)
         except Queue.Full:
-            print "Quere is full." #dev#
+            errlogger.warning("Thread resource Queue is full")
         except:
-            traceback.print_exc()
+            errlogger.exception("Thread resource Queue putting error")
         
         
 def runTaskList(THD_QUEUE=Queue.Queue()):

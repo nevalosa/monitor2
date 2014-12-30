@@ -7,26 +7,25 @@ import db_mysql
 import json
 import logging
 
-from my_global import *
-
+''' Log '''
 errlogger = logging.getLogger('error')
-def testlog():
-    errlogger.info('parse')
 
 
+#################
+### Functions ###
+#################
 def getMessageType(resource):
     try:
         jsonObj = json.loads(str(resource))
     except  Exception,e:
-        errmsg = "Message is not valid json"
-        errlog(errmsg)
+        errlogger.exception("Json parse error")
         return False
     
     try:
         messageType = jsonObj['type']
     except Exception,e:
         errmsg = "Type does not exist in the Json Message"
-        errlog(errmsg)
+        errlogger.exception("Json object property 'type' need")
         return False
     return messageType
     
@@ -34,8 +33,8 @@ def getMessageType(resource):
 def msg_push_parse(thd):
     '''
     msg_push_parse Function
+    Receive phone push messages ,and send push to phone
     '''
-    print "I'm the msg push parse function(lib/msg_parse.py)." #dev#
     # detail parse
     datatype = 'user count'
     if 'user count' == datatype:
@@ -47,8 +46,8 @@ def msg_push_parse(thd):
 def msg_data_parse(thd):
     '''
     msg_data_parse Function
+    Receive data messages ,and analysis&save data
     '''
-    print "I'm the msg_data_parse function(lib/msg_parse.py)." #dev#
     # detail parse
     datatype = 'user count'
     if 'user count' == datatype:
@@ -61,7 +60,6 @@ def msg_apprec_parse(thd):
     '''
     msg_data_parse Function
     '''
-    print "I'm the msg_data_parse function(lib/msg_parse.py)." #dev#
     # detail parse
     jsonObj = json.loads(str(thd.getResource()))
     
@@ -73,8 +71,7 @@ def msg_apprec_parse(thd):
         # <Dict>msgContent['values'] As value
         model.add(msgContent['values'], True)
     except Exception,e:
-        errmsg = "Json Parse Error (%s)" % e
-        errlog(errmsg)
+        errlogger.exception("Json Parse Error")
         return False
     
     
@@ -83,7 +80,6 @@ def dispatch_message(messageType, thd):
     '''
     dispatch_message Function
     '''
-    print "I'm the dispatch_message function(lib/msg_parse.py)." #dev#
     if   'PUSH' == messageType:
         pass
     elif 'DATA' == messageType:
@@ -99,11 +95,7 @@ def dispatch_message(messageType, thd):
 def parse_message(thd):
     '''
     parse_message Function
-    '''
-    print "I'm the parse_message function(lib/msg_parse.py)." #dev#
-    
-    print thd._resource #dev#
-    
+    '''   
     # Get message type
     messageType = getMessageType(thd.getResource())
     #messageType = 'PUSH'
@@ -119,7 +111,6 @@ def handle_one_message(thd):
     '''
     handle one message
     '''
-    print "I'm the handle one message function(lib/msg_parse.py)." #dev#
     parse_message(thd)
     #
     #end thread(thd)
