@@ -3,11 +3,16 @@ Created on 2014-11-28
 
 @author: Administrator
 '''
-
 import db_mysql
 import json
+import logging
 
 from my_global import *
+
+errlogger = logging.getLogger('error')
+def testlog():
+    errlogger.info('parse')
+
 
 def getMessageType(resource):
     try:
@@ -66,7 +71,7 @@ def msg_apprec_parse(thd):
         # New Table ORM
         model = db_mysql.Model(msgContent['obj_name'],thd.getMySQLCoon())
         # <Dict>msgContent['values'] As value
-        model.add(msgContent['values'])
+        model.add(msgContent['values'], True)
     except Exception,e:
         errmsg = "Json Parse Error (%s)" % e
         errlog(errmsg)

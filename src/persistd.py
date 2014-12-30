@@ -20,6 +20,8 @@ Options:
 """
 
 # System libs
+import logging
+import logging.handlers
 import os
 import Queue
 import sys
@@ -29,8 +31,8 @@ import traceback
 
 
 # My Libs
+from lib import common
 from lib import db_mysql
-from lib import my_global
 from lib import msg_parse
 from lib import thd_classes
 #from lib import amqp_consumer
@@ -51,28 +53,81 @@ except ImportError:
          'https://github.com/halst/schema')
     
 
+########################################
+### Default Golable System Variables ###
+########################################
+''' Default Database Config '''
+DB_CONFIG = {'user'  : 'admin', 
+             'passwd': 'admin',
+             'host'  : '192.168.126.8', 
+             'port'  : 3306, 
+             'db'    : 'monitor'}
 
-# Default Golable System Variables
 ''' pid file path '''
 __pidfile__     = '/tmp/monitor.pid'
+
 ''' Access log path '''
-__logaccess__   = '/var/log/monitor.log'
+__loggeneral__   = 'logs/general.log'
+__loggeneral_maxbytes__ = 100*1024*1024
+__loggeneral_num__ = 2
+
+''' Error log path '''
+__logerror__   = 'logs/error.log'
+__logerror_maxbytes__ = 100*1024*1024
+__logerror_num__ = 2
+
+''' Log Format '''
+#LOG_FORMAT = '[%(asctime)s, "%(filename)s", line %(lineno)d]\n%(levelname)s: %(message)s'
+LOG_FORMAT = '%(asctime)s [%(levelname)s] %(message)s'
+DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+
 ''' Number of concurrency threads '''
 __thread_concurrency__ = 2
+
 ''' Max queue size of received messages from MQ Server, Zero means unlimit '''
 __mq_queue_size__ = 0 
 
 ''' Debug Switch '''
 DEBUG = False 
+
+
+#########################
+### Do not modify !!! ###
+#########################
+''' Program Infomation '''
+PROGRAM_NAME = None
+
 ''' Thread resources Queue '''
 THD_QUEUE = None
 
+''' Log '''
+errlogger = logging.getLogger('error')
 
-# Functions
+#################
+### Functions ###
+#################
+def log_init():
+    ''' log ''' 
+    # log: CRITICAL > ERROR > WARNING > INFO > DEBUG > NOTSET #
+    logFormatter = logging.Formatter(LOG_FORMAT, DATE_FORMAT)
+
+    errlogger.setLevel(logging.DEBUG)
+
+    logRFHandler = logging.handlers.RotatingFileHandler( \
+        __logerror__, mode='a', maxBytes=__logerror_maxbytes__, \
+        backupCount=__logerror_num__, encoding='utf8', delay=0)
+    logRFHandler.setLevel(logging.DEBUG)
+    logRFHandler.setFormatter(logFormatter)
+
+    errlogger.addHandler(logRFHandler)
+
+
+
 def server_init():
     '''
     Initailize server environment
     '''
+
     # Store thread resources
     global THD_QUEUE 
     THD_QUEUE = Queue.Queue(__mq_queue_size__) 
@@ -84,11 +139,9 @@ def create_new_thread():
     Use Quere to keep resource threading safe
     '''
     global THD_QUEUE
-    curThread = threading.current_thread()
-    print  "%s I'm the create new thread function(Main.py)." % curThread #dev#
 
     # Database 
-    MySQLCoon = db_mysql.connect(my_global.DB_CONFIG)
+    MySQLCoon = db_mysql.connect(DB_CONFIG)
     
     while(True):
         # Init
@@ -182,16 +235,14 @@ def handle_messagequeue_messags():
  
 def main(args=None):
     ''' Main Function'''
-    
     #print(args)
-
     
     try:
         # Setup argument parser
         print "I'm the master threads(Main.py)." #dev#
         
         #Base config
-        program_name = os.path.basename(sys.argv[0])
+        PROGRAM_NAME = os.path.basename(sys.argv[0])
         
         # Server Initalize
         server_init()
@@ -210,8 +261,8 @@ def main(args=None):
         return 0
     except Exception, e:
         
-        indent = len(program_name) * " "
-        sys.stderr.write(program_name + ": " + repr(e) + "\n")
+        indent = len(PROGRAM_NAME) * " "
+        sys.stderr.write(PROGRAM_NAME + ": " + repr(e) + "\n")
         sys.stderr.write(indent + "  for help use --help")
         return 2
     
@@ -298,7 +349,11 @@ if __name__ == '__main__':
     # Set Global System variables
     if True == args['--debug']:
         DEBUG = True
-     
+
+    # log 
+    log_init()
+    errlogger.info(" %sing daemon from %s" % (args['ACTION'], os.getcwd()))   
+
     # Real Main Func in Daemon
     if DEBUG:
         main(args)

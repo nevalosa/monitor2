@@ -5,39 +5,6 @@ Created on 2014-12-03
 '''
 import time
 
-# DB Config
-DB_CONFIG = {'user'  : 'admin', 
-             'passwd': 'admin',
-             'host'  : '192.168.126.8', 
-             'port'  : 3306, 
-             'db'    : 'monitor'}
-
-DB_CONFIG_USER={}
-
-# Default Golable System Variables
-''' pid file path '''
-__pidfile__     = '/tmp/monitor.pid'
-
-''' Access log path '''
-__loggeneral__   = None #'/var/log/my_general.log'
-
-''' Error log path '''
-__logerror__   = None #'/var/log/my_error.log'
-
-''' Number of concurrency threads '''
-__thread_concurrency__ = 2
-
-''' Max queue size of received messages from MQ Server, Zero means unlimit '''
-__mq_queue_size__ = 0 
-
-
-''' Debug Switch '''
-DEBUG = False 
-
-''' Thread resources Queue '''
-THD_QUEUE = None
-
-
 
 # Common Functions
 def _output2tty(message):

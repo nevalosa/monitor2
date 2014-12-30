@@ -58,7 +58,6 @@ class Task(object):
                 
             # Run task
             objMsgBody = taskFunc()
-            
             if objMsgBody is None:
                 continue
             elif objMsgBody == False:

@@ -98,10 +98,11 @@ def handle_collecting_tasks():
             continue
         except:
             traceback.print_exc() 
-            
+   
         # send msg to MQ
         if DEBUG:
             print msg
+            pass
         else:
             from lib import amqp_producer
             amqpProductor = amqp_producer.Productor()
