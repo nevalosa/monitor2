@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<include file="./Core/Tpl/default/Public/header.html" />
+	<title>TMC</title>
+</head>
+
+<body>
+<include file="./Core/Tpl/default/Public/menu.html" />
+
+<div>SubMenu: 
+	<a href='__APP__/Mail/index/ismember/1'>Member(default)</a>
+	<a href='__APP__/Mail/index/ismember/2'>Guest</a>
+	<a href='__APP__/Mail/index/ismember/'>All</a>
+	<a href='__APP__/Mail/index/ismember/3'>Officer</a>
+</div>
+<hr>
+
+
+
+<volist name='member' id='val'>
+<div>
+	{$val.lastname} / {$val.cnname} 
+	<a href="__APP__/Index/checkin" onclick="return false;">签到</a>
+	<a href="__APP__/Member/profile/uid/{$val.id}">Profile</a>
+</div>
+	
+</volist>
+
+<volist name='mailList' id='vo' >
+	<notempty name="vo.email">{$vo.email},<br></notempty>
+</volist>
+
+
+
+</body>
+</html>

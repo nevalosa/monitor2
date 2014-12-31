@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<include file="./Core/Tpl/default/Public/header.html" />
+	<title>TMC</title>
+	
+	<style type="text/css">
+		.left {
+			float：left;width;70%;
+		}
+		.right {
+			margin-left;70%; width:30%;
+		}
+	</style>
+
+</head>
+<body>
+<include file="./Core/Tpl/default/Public/menu.html" />
+
+<div>
+	<a href="__APP__/Meeting/edit/mid/{$profile.mid}">修改</a>
+	<a href="__APP__/Meeting/delete/mid/{$profile.mid}">删除</a>
+</div>
+<hr>
+<form action="__APP__/Meeting/editingexportMember" method="post">
+	<input type="hidden" name="uid" value="{$profile.uid}" >
+	<input type="hidden" name="lastpresent" value="{$profile.lastpresent}" >
+	<div>no:<input type="text" name="no" value="{$profile.no}" ></div>
+	<div>中文名:<input type="text" name="cname" value="{$profile.cnname}" ></div>
+	<div>场地费<input type="text" name="fee" value="{$profile.fee}" ></div>
+	<div>备注:<input type="text" name="remark" value="{$profile.remark}" ></div>
+	<div style="clear:both"></div>
+	
+	<input type="submit">
+</form>
+
+</body>
+</html>

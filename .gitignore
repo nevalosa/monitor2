@@ -10,3 +10,8 @@ __pycache__/
 
 # Django stuff:
 *.log
+
+# PHP Project
+.settings
+.buildpath
+.project

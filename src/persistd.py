@@ -23,6 +23,7 @@ Options:
 import logging
 import logging.handlers
 import os
+import platform
 import Queue
 import sys
 import threading
@@ -31,8 +32,8 @@ import time
 # My Libs
 from lib import common
 from lib import db_mysql
-from lib import msg_parse
-from lib import thd_classes
+from persistd import msg_parse
+from persistd import thd_classes
 
 # Third libs
 try:
@@ -108,6 +109,11 @@ def log_init():
     ''' log ''' 
     # log: CRITICAL > ERROR > WARNING > INFO > DEBUG > NOTSET #
     logFormatter = logging.Formatter(LOG_FORMAT, DATE_FORMAT)
+    
+    if DEBUG:
+        __loglevel__ = logging.DEBUG
+    else:
+        __loglevel__ = logging.INFO
 
     # Add error log handler 
     errlogger.setLevel(logging.DEBUG)
@@ -127,6 +133,13 @@ def log_init():
     
     errlogger.addHandler(console)
 
+def check_os():
+    ''' Unsupported os '''
+    running_system = platform.system()
+    if ('Linux' != running_system) and ('Windows' != running_system):
+        errlogger.errorl("Unsupported Operation System")
+        _shutdown()
+        sys.exit(0)
 
 def server_init():
     '''
@@ -178,14 +191,35 @@ def handle_messagequeue_messags():
     '''
     global THD_QUEUE
     
-    errlogger.info("Building %d work threads" % __thread_concurrency__)
+    errlogger.info("Building %d threads for works." % __thread_concurrency__)
     for i in range(__thread_concurrency__):
         new_thread = threading.Thread(target=create_new_thread)
         new_thread.daemon = True
         new_thread.start()
     
-    errlogger.info("Waiting for message from MQ...")
-    if DEBUG:
+    errlogger.info("Waiting for message from MQ...")    
+    if "Linux" == platform.system():
+        ''' Linux: use proton amqp '''
+        from lib import amqp_consumer
+        amqpConsumer = amqp_consumer.Consumer()
+        while(True):
+            # Get Msg From MQ
+            message = amqpConsumer.getMsg()
+            errlogger.debug("Received message:\n%s" % message)
+            thd = thd_classes.THD(resource=message)
+            
+            # Put resourc into Process Queue 
+            try:
+                THD_QUEUE.put(thd, block=False, timeout=None)
+            except Queue.Full:
+                errlogger.warning("Thread resource Queue is full")
+                continue
+            except:
+                errlogger.exception("Thread resource Queue putting error")
+        pass
+                
+    elif 'Windows' == platform.system():
+        ''' Windows: without proton ''' 
         num = 0 #dev
         while(True):
             # Get Msg From MQ
@@ -220,24 +254,8 @@ def handle_messagequeue_messags():
             num+=1 #dev 
             if num>0:#dev
                 break #dev
-    else:
-        from lib import amqp_consumer
-        amqpConsumer = amqp_consumer.Consumer()
-        while(True):
-            # Get Msg From MQ
-            message = amqpConsumer.getMsg()
-            errlogger.debug("Received message:\n%s" % message)
-            thd = thd_classes.THD(resource=message)
-            
-            # Put resourc into Process Queue 
-            try:
-                THD_QUEUE.put(thd, block=False, timeout=None)
-            except Queue.Full:
-                errlogger.warning("Thread resource Queue is full")
-                continue
-            except:
-                errlogger.exception("Thread resource Queue putting error")
- 
+        pass
+    
     # block until all tasks are done
     THD_QUEUE.join()
    
@@ -271,10 +289,10 @@ def main(args=None):
         pass
     
     finally:
-        _finish()
+        _shutdown()
         sys.exit(2)
   
-def _finish():
+def _shutdown():
     try:
         pf = file(__pidfile__, 'r')
         pid = int(pf.read().strip())
@@ -377,10 +395,11 @@ if __name__ == '__main__':
     errlogger.info("%sing daemon from %s" % \
         (args['ACTION'][0].upper() + args['ACTION'][1:], os.getcwd()))   
 
+    # Check System
+    check_os()
+        
     # Real Main Func in Daemon
-    if DEBUG:
-        main(args)
-    else:
+    if "Linux" == platform.system():
         from lib import daemonize
         daemon = daemonize.Daemonize(pidfile=__pidfile__, action=main, args=args)
         if 'start'== args['ACTION']:
@@ -389,6 +408,8 @@ if __name__ == '__main__':
             daemon.stop()
         elif 'restart' == args['ACTION']:
             daemon.restart()
+    elif "Windows" == platform.system():
+        main(args)
 
     sys.exit(0)
 

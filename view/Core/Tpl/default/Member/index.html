@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<include file="./Core/Tpl/default/Public/header.html" />
+	<title>TMC</title>
+	<script>
+	var lastmeeting = {$lastmeeting};
+	$(function() {
+		//绑定签到
+		$('.Sign').bind('click', function() {
+			var element = $(this);
+			var uid = element.attr("id");
+			var sign = 'Sign'; if(element.text() == 'Sign'){ sign = 'Signed'; }
+			var mark = 'Signed'; if(element.text() == 'Signed'){ mark = 'Sign'; }
+			$.ajax({
+				type: "GET",
+				//url: "{$Think.const.PROJECT_URL}__APP__/Ajax/membersign/",
+				url: "__APP__/Ajax/membersign/",
+				data: "format=json&jsoncallback=?&uid=" + uid + "&sign=" + sign + "&lastmeeting=" + lastmeeting,
+				success: function(msg){
+					if(msg == '1'){
+						element.text(mark);
+						if(mark=='Signed'){
+							element.addClass('Signed');
+						}
+						else{
+							element.removeClass('Signed');
+						}
+						
+					}
+					else{
+						alert( "更新失败" );
+					}
+				}
+			});
+		});
+	});
+	</script>
+	<style>
+		.Signed{
+			 color:red;
+		}
+	</style>
+</head>
+
+<body>
+<include file="./Core/Tpl/default/Public/menu.html" />
+
+<div>SubMenu: 
+	<a href='__APP__/Member/index/ismember/1'>Member(default)</a>
+	<a href='__APP__/Member/index/ismember/2'>Guest</a>
+	<a href='__APP__/Member/index/ismember/'>All</a>
+	<a href='__APP__/Member/index/ismember/3'>Officer</a>
+	<a href='__APP__/Member/add'>Add a new member</a>
+</div>
+<hr>
+
+
+
+<volist name='member' id='val'>
+<div>
+	<a class="normal" name="{$val.lastname}" href="#{$val.lastname}">{$val.lastname} / {$val.cnname}</a>
+	<a class="Sign" id="{$val.id}" href="#{$val.lastname}" onclick="return false;">Sign</a>
+	<a href="__APP__/Member/profile/uid/{$val.id}">Profile</a>
+	<a href="__APP__/Member/delete/uid/{$val.id}">删除</a>
+</div>
+	
+</volist>
+
+
+</body>
+</html>

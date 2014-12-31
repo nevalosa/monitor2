@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<include file="./Core/Tpl/default/Public/header.html" />
+	<title>TMC</title>
+	
+	<style type="text/css">
+		.left {
+			float：left;width;70%;
+		}
+		.right {
+			margin-left;70%; width:30%;
+		}
+	</style>
+
+</head>
+<body>
+<include file="./Core/Tpl/default/Public/menu.html" />
+
+<div>
+	<a href="__APP__/Member/edit/uid/{$profile.id}">修改</a>
+	<a href="__APP__/Member/delete/uid/{$profile.id}">删除</a>
+</div>
+<hr>
+<form action="__APP__/Member/editing/uid/{$profile.id}" method="post">
+	<div>lastname:<input type="text" name="lastname" value="{$profile.lastname}" ></div>
+	<div>firstname:<input type="text" name="firstname" value="{$profile.firstname}" ></div>
+	<div>cnname:<input type="text" name="cnname" value="{$profile.cnname}" ></div>
+	<div>sponsor:<input type="text" name="sponsor" value="{$profile.sponsor}" ></div>
+	<div>email:<input type="text" name="email" value="{$profile.email}" ></div>
+	<div>mobile:<input type="text" name="mobile" value="{$profile.mobile}" ></div>
+	<div>phone:<input type="text" name="phone" value="{$profile.phone}" ></div>
+	<div>qq:<input type="text" name="qq" value="{$profile.qq}" ></div>
+	<div>level:<input type="text" name="level" value="{$profile.level}" ></div>
+	<div>t_member:<input type="text" name="t_member" value="{$profile.t_member}" ></div>
+	<div>ismember:<input type="text" name="ismember" value="{$profile.ismember}" ></div>
+	
+	<div class="line"><div class="left">ismember:</div><div class="right"><input type="text" value="{$profile.ismember}" ></div></div>
+	<div style="clear:both"></div>
+	
+	<input type="submit">
+</form>
+
+</body>
+</html>

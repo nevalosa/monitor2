@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<include file="./Core/Tpl/default/Public/header.html" />
+	<title>TMC</title>
+</head>
+
+<body>
+<include file="./Core/Tpl/default/Public/menu.html" />
+
+<div>SubMenu: 
+	<a href='__APP__/Meeting/adding'>Add a new member</a>
+</div>
+<hr>
+
+
+<table>
+		<tr>
+			<td><div>会议届数</div></td>
+			<td><div>举办日期</div></td>
+			<td><div>与会人数</div></td>
+			<td><div>本次收入</div></td>
+			<td><div>修改</div></td>
+			<td><div>签到信息</div></td>
+			
+		</tr>
+	<volist name='meeting' id='vo'>
+		<tr>
+			<td><div>{$vo.no}</div></td>
+			<td><div>{$vo.lastmeeting|date='Y年m月d日',###}</div></td>
+			<td><div>{$vo.toastmaster}</div></td>
+			<td><div>待计算</div></td>
+			<td><div><a href="__APP__/Meeting/profile/mid/{$vo.mid}">Profile</a></div></td>
+			<td><div><a href="__APP__/Meeting/exportMember/lastmeeting/{$vo.lastmeeting}">签到信息</a></div></td>
+			
+			<!-- 
+			<td><div>{$vo.fee_input_member}</div></td>
+			<td><div>{$vo.fee_input_guest}</div></td>
+			<td><div>{$vo.fee_input_other}</div></td>
+			<td><div>{$vo.fee_output_rent}</div></td>
+			<td><div>{$vo.fee_output_prize}</div></td>
+			<td><div>{$vo.fee_output_ohter}</div></td>
+			 -->
+		</tr>
+	</volist>
+</table>
+</body>
+</html>

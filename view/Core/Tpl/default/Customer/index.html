@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Dashboard Template for Bootstrap</title>
+
+    <!-- Public Static Files -->
+    <include file="./Core/Tpl/default/Public/header.html" />
+    
+    <!-- Custom styles for this template -->
+    <link href="__ROOT__/Static/Css/Index/index.css" rel="stylesheet">
+    
+    <!-- Charts JS Code -->
+    <script src="__ROOT__/Static/Js/charts.js"></script>
+</head>
+
+
+
+<body>
+	<!-- Header Navigation Bar -->
+    <include file="./Core/Tpl/default/Public/navbar_header.html" />
+    <!-- Header Navigation Bar -->
+
+    <div class="container-fluid">
+    	<!-- Sider Navigation Bar -->
+      	<include file="./Core/Tpl/default/Public/navbar_sider.html" />
+      	<!-- Sider Navigation Bar -->
+      	
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <h1 class="page-header">Chart</h1>
+
+            <div class="row">
+            <div class="col-md-9">
+                <div id="realTimeChart" style="width:100%; height:200px;"></div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading"><h3 class="panel-title">Hosts</h3></div>
+                    <div class="panel-body">
+	                    <div class="checkbox">                   
+	                        <label><input type="checkbox" value="remember-me">192.168.126.8</label>
+	                        <label><input type="checkbox" value="remember-me">172.172.172.39</label>
+	                        <label><input type="checkbox" value="remember-me">SIP Online User</label>
+	                        <label><input type="checkbox" value="remember-me">Web Online User</label>
+	                        <label><input type="checkbox" value="remember-me">SIP Online User</label>
+	                        <label><input type="checkbox" value="remember-me">SIP Online User</label>
+	                    </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            
+            <h2 class="sub-header">Options</h2>
+
+            <div class="row">
+                <div class="col-sm-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading"><h3 class="panel-title">General Situation </h3></div>
+			        <div class="panel-body">
+                    <div class="checkbox">			         
+			            <div class="col-sm-6">
+                        <label><input type="checkbox" value="remember-me">SIP Online User</label>
+                        <label><input type="checkbox" value="remember-me">SIP Online User</label>
+                        <label><input type="checkbox" value="remember-me">SIP Online User</label>
+			            </div>
+			            <div class="col-sm-6">
+                        <label><input type="checkbox" value="remember-me">Web Online User</label>
+                        <label><input type="checkbox" value="remember-me">SIP Online User</label>
+                        <label><input type="checkbox" value="remember-me">SIP Online User</label>
+                        </div>
+                    </div>
+			            
+	                </div>
+	            </div>
+		        </div>
+            </div>
+          
+          
+        </div>
+        
+      </div>
+    </div>
+
+    
+</body>
+</html>

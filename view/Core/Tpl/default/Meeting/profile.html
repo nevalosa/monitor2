@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<include file="./Core/Tpl/default/Public/header.html" />
+	<title>TMC</title>
+</head>
+<body>
+<include file="./Core/Tpl/default/Public/menu.html" />
+
+<div>
+	<a href="__APP__/Meeting/edit/mid/{$profile.mid}">修改</a>
+	<a href="__APP__/Meeting/delete/mid/{$profile.mid}">删除</a>
+</div>
+<hr>
+<div>mid:{$profile.mid}</div>
+<div>no:{$profile.no}</div>
+<div>lastmeeting:{$profile.lastmeeting|date='Y-m-d',###}</div>
+<div>toastmaster:{$profile.toastmaster}</div>
+<div>fee_input_member:{$profile.fee_input_member}</div>
+<div>fee_input_guest:{$profile.fee_input_guest}</div>
+<div>fee_input_other:{$profile.fee_input_other}</div>
+<div>fee_output_rent:{$profile.fee_output_rent}</div>
+<div>fee_output_prize:{$profile.fee_output_prize}</div>
+<div>fee_output_ohter:{$profile.fee_output_ohterr}</div>
+
+						
+
+</body>
+</html>

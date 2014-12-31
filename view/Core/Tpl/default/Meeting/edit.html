@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<include file="./Core/Tpl/default/Public/header.html" />
+	<title>TMC</title>
+	
+	<style type="text/css">
+		.left {
+			float：left;width;70%;
+		}
+		.right {
+			margin-left;70%; width:30%;
+		}
+	</style>
+
+</head>
+<body>
+<include file="./Core/Tpl/default/Public/menu.html" />
+
+<div>
+	<a href="__APP__/Meeting/edit/mid/{$profile.mid}">修改</a>
+	<a href="__APP__/Meeting/delete/mid/{$profile.mid}">删除</a>
+</div>
+<hr>
+<form action="__APP__/Meeting/editing/uid/{$profile.id}" method="post">
+	<input type="hidden" name="mid" value="{$profile.mid}" >
+	<div>no:<input type="text" name="no" value="{$profile.no}" ></div>
+	<div>lastmeeting:<input type="text" name="lastmeeting" value="{$profile.lastmeeting|date='Y-m-d',###}" ></div>
+	<div>toastmaster:<input type="text" name="toastmaster" value="{$profile.toastmaster}" ></div>
+	<div>fee_input_member:<input type="text" name="fee_input_member" value="{$profile.fee_input_member}" ></div>
+	<div>fee_input_guest:<input type="text" name="fee_input_guest" value="{$profile.fee_input_guest}" ></div>
+	<div>fee_input_other:<input type="text" name="fee_input_other" value="{$profile.fee_input_other}" ></div>
+	<div>fee_output_rent:<input type="text" name="fee_output_rent" value="{$profile.fee_output_rent}" ></div>
+	<div>fee_output_prize:<input type="text" name="fee_output_prize" value="{$profile.fee_output_prize}" ></div>
+	<div>fee_output_ohter:<input type="text" name="fee_output_ohter" value="{$profile.fee_output_ohter}" ></div>
+	
+	<div style="clear:both"></div>
+	
+	<input type="submit">
+</form>
+
+</body>
+</html>
