@@ -9,10 +9,7 @@
     <!-- Custom styles for this template -->
     <link href="__ROOT__/Static/Css/Index/index.css" rel="stylesheet">
     
-    <!-- Used for charts.js which define the ajaxURL module name -->
-    <script> 
-    var ajaxModuleName="AjaxUserData";
-    </script>
+
 </head>
 
 
@@ -30,21 +27,21 @@
       	
       	<!-- Right Container -->
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            <h1 class="page-header">Chart</h1>
+            <h1 class="page-header">Conference Chart</h1>
 
             <!-- Chart, Time, Hosts -->
             <div class="row">
             
-            <div class="col-md-12">
+            <div class="col-md-9">
 	            <div class="col-md-12">
-	                <div id="realTimeChart" style="width:100%; height:300px;"></div>
+	                <div id="realTimeChart" style="width:100%; height:200px;"></div>
 	            </div>
 	            
 	            <div class="col-md-12" id="ajaxDistrict">
 	                <div class="radio">
 	                                  
 	                    <div class="col-md-9">
-	                    <label><input type="radio" name="district" value="normal" checked=true>Today</label>
+	                    <label><input type="radio" name="district" value="Normal" checked=true>Today</label>
 	                    <label><input type="radio" name="district" value="Day">Last Day</label>
 	                    <label><input type="radio" name="district" value="Week">Last Week</label>
 	                    <label><input type="radio" name="district" value="Month">Last Month</label>
@@ -57,7 +54,21 @@
 	                </div>
 	            </div>
             </div>
-          
+            
+            <div class="col-md-3" id="ajaxHosts">
+                <div class="panel panel-default">
+                    <div class="panel-heading"><h3 class="panel-title">Hosts</h3></div>
+                    <div class="panel-body">
+                        <div class="checkbox">                   
+                            <label><input type="checkbox" group="host" value="172.172.172.18" checked=true>172.172.172.18</label>
+                            <label><input type="checkbox" group="host" value="172.172.172.20">172.172.172.20</label>
+                            <label><input type="checkbox" group="host" value="172.172.172.30">172.172.172.30</label>
+                            <label><input type="checkbox" group="host" value="172.172.172.39">172.172.172.39</label>
+                            <label><input type="checkbox" group="host" value="54.201.143.237">54.201.143.237</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             </div>  <!-- End of Chart, Time, Hosts -->
             
@@ -70,50 +81,15 @@
 			        <div class="panel-body">
                     <div class="checkbox">			         
 			            <div class="col-sm-12">
-                        <label><input type="checkbox" value="SipOnlineUser" checked=true>SIP Online User&nbsp</label>
-                        <label><input type="checkbox" value="WebOnlineUser">Web Online User&nbsp</label>
-                        <label><input type="checkbox" value="RegisteredUser">Registered User&nbsp</label>
-                        <label><input type="checkbox" value="Guest">Guest&nbsp</label>
+                        <label><input type="checkbox" value="siponlineuser" checked=true>Conference in processing&nbsp</label>
+                        <label><input type="checkbox" value="remember-me">Daily Conference&nbsp</label>
+                        <label><input type="checkbox" value="remember-me">Daily Effective Conference&nbsp</label>
                         </div>
                     </div>
 			            
 	                </div>
 	            </div>
 		        </div>
-		        
-		        <div class="col-sm-12 col-md-6 col-lg-6">
-                <div class="panel panel-default">
-                    <div class="panel-heading"><h3 class="panel-title">Web User Type</h3></div>
-                    <div class="panel-body">
-                    <div class="checkbox">                   
-                        <div class="col-sm-6">
-                        <label><input type="checkbox" value="remember-me">Regisiter User</label>
-                        </div>
-                        <div class="col-sm-6">
-                        <label><input type="checkbox" value="remember-me">Guest User</label>
-                        </div>
-                    </div>
-                        
-                    </div>
-                </div>
-                </div>
-                
-                <div class="col-sm-12 col-md-6 col-lg-6">
-                <div class="panel panel-default">
-                    <div class="panel-heading"><h3 class="panel-title">Sip User Type</h3></div>
-                    <div class="panel-body">
-                    <div class="checkbox">                   
-                        <div class="col-sm-6">
-                        <label><input type="checkbox" value="remember-me">Type 1</label>
-                        </div>
-                        <div class="col-sm-6">
-                        <label><input type="checkbox" value="remember-me">Type 2</label>
-                        </div>
-                    </div>
-                        
-                    </div>
-                </div>
-                </div>
                 
             </div>
           

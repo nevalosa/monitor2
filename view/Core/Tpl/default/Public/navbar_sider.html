@@ -1,8 +1,7 @@
 <div class="col-sm-3 col-md-2 sidebar">
-
     <ul class="nav nav-sidebar">
         <if condition="MODULE_NAME eq 'Index'"><li class="active"><else /><li></if>
-            <a href="__APP__/Index">Overview</a>
+            <a href="__APP__/Overview">Overview</a>
         </li>
         <li><a href="#">Reports</a></li>
         <li><a href="#">Analytics</a></li>
@@ -13,14 +12,16 @@
 	    <if condition="MODULE_NAME eq 'Customer'"><li class="active"><else /><li></if>
 	    	<a href="__APP__/Customer">Customer Infomation</a>
 	    </li>
-	    <li><a href="">Nav item again</a></li>
-	    <li><a href="">One more nav</a></li>
-	    <li><a href="">Another nav item</a></li>
-	    <li><a href="">More navigation</a></li>
-  </ul>
-  <ul class="nav nav-sidebar">
-    <li><a href="">Nav item again</a></li>
-    <li><a href="">One more nav</a></li>
-    <li><a href="">Another nav item</a></li>
-  </ul>
+	    <if condition="MODULE_NAME eq 'Conference'"><li class="active"><else /><li></if>
+            <a href="__APP__/Conference">Conference Infomation</a>
+        </li>
+	    <if condition="MODULE_NAME eq 'FileStorage'"><li class="active"><else /><li></if>
+            <a href="__APP__/FileStorage">File Storage</a>
+        </li>
+    </ul>
+    <ul class="nav nav-sidebar">
+        <if condition="MODULE_NAME eq 'Example'"><li class="active"><else /><li></if>
+            <a href="__APP__/Example">Chart Example</a>
+        </li>
+    </ul>
 </div>
