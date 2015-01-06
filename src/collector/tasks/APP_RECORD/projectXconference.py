@@ -4,73 +4,90 @@ Created on 2014-12-29
 @author: Administrator
 '''
 
+import logging
+import redis
+
 from lib import db_mysql
 from lib import common
 
-def conf_num(resource=None):
+
+def apprec_conf(resource=None):
     '''
         Get Total amount of conference
     '''
-    TARGET_TABLE='apprec_conf_num'
-    DBCoon = db_mysql.connect(user=resource['db']['user'], 
-                              passwd=resource['db']['passwd'], 
-                              host=resource['db']['host'], 
-                              port=resource['db']['port'], 
-                              db=resource['db']['db'])
-
+    TARGET_TABLE='apprec_conf'
+    
+    DBCoon = db_mysql.connect(user=resource['mysql']['user'], 
+                              passwd=resource['mysql']['passwd'], 
+                              host=resource['mysql']['host'], 
+                              port=resource['mysql']['port'], 
+                              db=resource['mysql']['db'])
+    
+    RedisCoon = redis.StrictRedis(host=resource['redis']['host'], 
+                                  port=resource['redis']['port'], 
+                                  db=resource['redis']['db'])
     # Get Data    
     mConf = db_mysql.Model('conf_info',DBCoon)
     dataResult = mConf.field("count(*) AS num").where("1=1").find()
     if dataResult == False:
+        return False
+    conf_total = dataResult['num']
+    
+    try:
+        dataResult = RedisCoon.info('keyspace')
+        sipOnlineNum = dataResult['db6']['keys']
+    except:
+        logging.exception("Redis operation error")
         return False
     
     # Set Value
     values = dict()
     values['type'] = 0
     values['real_time'] = common.now()
-    values['conf_num'] = dataResult['num']
+    values['total'] = conf_total
+    values['sip_conf'] = sipOnlineNum
     
     # fill message body
     msgBody = common.fillMsgData(TARGET_TABLE, values)
     return msgBody
 
-def conf_daliy_num(resource=None):
+def apprec_conf_statistics(resource=None):
     '''
         Get daliy and effective num of yesterday conference 
 
     '''
     yesterday = common.lastday()
 
-    TARGET_TABLE='apprec_conf_daily_num'
+    TARGET_TABLE='apprec_conf_statistics'
 
-    DBCoon = db_mysql.connect(user=resource['db']['user'], 
-                              passwd=resource['db']['passwd'], 
-                              host=resource['db']['host'], 
-                              port=resource['db']['port'], 
-                              db=resource['db']['db'])
+    DBCoon = db_mysql.connect(user=resource['mysql']['user'], 
+                              passwd=resource['mysql']['passwd'], 
+                              host=resource['mysql']['host'], 
+                              port=resource['mysql']['port'], 
+                              db=resource['mysql']['db'])
 
     ''' Get Data '''
-    # daily conf #
+    # Yesterdat daily conf #
     mConf = db_mysql.Model('conf_info',DBCoon)
     strWhere = "state >0 and start_time>'%s 00:00:00' and start_time<='%s 23:59:59'" % (yesterday,yesterday)
     dataResult = mConf.field("count(*) AS num").where(strWhere).find()
     if dataResult == False:
         return False
-    confNum = dataResult['num']
+    yesterdayConfNum = dataResult['num']
 
     # daliy effective conf #
     strWhere = "state >0 and start_time>'%s 00:00:00' and start_time<='%s 23:59:59' and duration>10" % (yesterday,yesterday)
     dataResult = mConf.field("count(*) AS num").where(strWhere).find()
     if dataResult == False:
         return False
-    confEffectiveNum = dataResult['num']
+    yesterdayConfEffectiveNum = dataResult['num']
    
     ''' Set Value '''
     values = dict()
     values['type'] = 0
     values['real_time'] = "%s 23:59:59" % yesterday
-    values['conf_num'] = confNum
-    values['conf_effective_num'] = confEffectiveNum
+    values['conf_num'] = yesterdayConfNum
+    values['conf_effective_num'] = yesterdayConfEffectiveNum
     
     ''' fill message body '''
     msgBody = common.fillMsgData(TARGET_TABLE, values)
@@ -78,3 +95,5 @@ def conf_daliy_num(resource=None):
 
 
 
+def apprec_conf_rt_statistics(resource=None):
+    pass

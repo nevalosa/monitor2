@@ -122,7 +122,7 @@ def apprec_user_statistics(resource=None):
     # Set Value
     values = dict()
     values['type'] = 0
-    values['real_time'] = common.now()
+    values['real_time'] = "%s 23:59:59" % yesterday
     values['max_sip'] = MAX_SIP
     values['min_sip'] = MIN_SIP
     values['max_web'] = MAX_WEB
@@ -134,5 +134,5 @@ def apprec_user_statistics(resource=None):
     msgBody = common.fillMsgData(TARGET_TABLE, values)
     return msgBody
    
-
-
+def apprec_user_rt_statistics(resource=None):
+    pass
