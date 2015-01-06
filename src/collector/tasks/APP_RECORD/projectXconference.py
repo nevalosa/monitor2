@@ -15,7 +15,7 @@ def apprec_conf(resource=None):
     '''
         Get Total amount of conference
     '''
-    TARGET_TABLE='apprec_conf'
+    TARGET_TABLE='apprec_conference'
     
     DBCoon = db_mysql.connect(user=resource['mysql']['user'], 
                               passwd=resource['mysql']['passwd'], 
@@ -58,7 +58,7 @@ def apprec_conf_statistics(resource=None):
     '''
     yesterday = common.lastday()
 
-    TARGET_TABLE='apprec_conf_statistics'
+    TARGET_TABLE='apprec_conference_statistics'
 
     DBCoon = db_mysql.connect(user=resource['mysql']['user'], 
                               passwd=resource['mysql']['passwd'], 
