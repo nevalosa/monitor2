@@ -10,6 +10,7 @@ import redis
 from lib import db_mysql
 from lib import common
 
+#返回单条记录
 def apprec_user(resource=None):
     '''
         Get Number of Users
@@ -61,25 +62,24 @@ def apprec_user(resource=None):
     return msgBody
 
 
-def apprec_user_statistics(resource=None):
+# 返回多条记录
+def daily_sip_register(resource=None):
     ''' 
-        Daily Usr Datastatistics
+        Get Daily Sip Max user and Min user 
     '''
-    TARGET_TABLE='apprec_user_statistics'
-    
-    DBCoon = db_mysql.connect(user=resource['mysql']['user'], 
-                              passwd=resource['mysql']['passwd'], 
-                              host=resource['mysql']['host'], 
-                              port=resource['mysql']['port'], 
-                              db=resource['mysql']['db'])
+    TARGET_TABLE='apprec_user_sip_num'
+    DBCoon = db_mysql.connect(user='admin', passwd='admin', 
+                        host='192.168.126.8', port=3306, db='monitor')
+    MAX_NUM = 0
+    MIN_NUM = 0
 
     yesterday = common.lastday()
    
-    # Get Data
-    mUser = db_mysql.Model('apprec_user',DBCoon)
+    # Get Data    
+    mUser = db_mysql.Model('apprec_user_sip_num',DBCoon)
     
     # check last day statistics data
-    strWhere = "type=2 and real_time='%s 23:59:59'" % (yesterday)
+    strWhere = "type=21 and real_time>'%s 00:00:00' and real_time<='%s 23:59:59'" % (yesterday,yesterday)
     dataResult = mUser.field("id").where(strWhere).find()
     # SQL error
     if dataResult == False:
@@ -89,50 +89,38 @@ def apprec_user_statistics(resource=None):
 
     # Get last day normal data
     strWhere = "type=0 and real_time>'%s 00:00:00' and real_time<='%s 23:59:59'" % (yesterday,yesterday)
-    dataResult = mUser.where(strWhere).select()
+    dataResult = mUser.field('num').where(strWhere).select()
     # SQL error
     if dataResult == False:
         return False
     # No data
     if dataResult is None:
         return None
-
-    MAX_SIP = 0
-    MIN_SIP = dataResult[0]['sip_online_user']
-    MAX_WEB = 0
-    MIN_WEB = dataResult[0]['web_online_user']
-    MAX_PC = 0
-    MIN_PC = dataResult[0]['pc_online_user']
+    
+    MIN_NUM = dataResult[0]['num']
     for val in dataResult:
-        if MAX_SIP < int(val['sip_online_user']):
-            MAX_SIP = int(val['sip_online_user'])
-        if MIN_SIP > int(val['sip_online_user']):
-            MIN_SIP = int(val['sip_online_user'])
-            
-        if MAX_WEB < int(val['web_online_user']):
-            MAX_WEB = int(val['web_online_user'])
-        if MIN_WEB > int(val['web_online_user']):
-            MIN_WEB = int(val['web_online_user'])
-            
-        if MAX_PC < int(val['pc_online_user']):
-            MAX_PC = int(val['pc_online_user'])
-        if MIN_PC > int(val['pc_online_user']):
-            MIN_PC = int(val['pc_online_user'])
+        if MAX_NUM < int(val['num']):
+            MAX_NUM = int(val['num'])
+        if MIN_NUM > int(val['num']):
+            MIN_NUM = int(val['num'])
     
     # Set Value
-    values = dict()
-    values['type'] = 0
-    values['real_time'] = common.now()
-    values['max_sip'] = MAX_SIP
-    values['min_sip'] = MIN_SIP
-    values['max_web'] = MAX_WEB
-    values['min_web'] = MIN_WEB
-    values['max_pc'] = MAX_PC
-    values['min_pc'] = MIN_PC
-    
-    # fill message body
-    msgBody = common.fillMsgData(TARGET_TABLE, values)
-    return msgBody
-   
+    msgBodyList = list()
 
+    values = dict()
+    values['type'] = 21
+    values['real_time'] = "%s 23:59:59" % yesterday
+    values['num'] = MIN_NUM
+    msgBody = common.fillMsgData(TARGET_TABLE, values)
+    msgBodyList.append(msgBody)
+    
+    values = dict()
+    values['type'] = 22
+    values['real_time'] = "%s 23:59:59" % yesterday
+    values['num'] = MAX_NUM
+    msgBody = common.fillMsgData(TARGET_TABLE, values)
+    msgBodyList.append(msgBody)
+    
+    return msgBodyList
+   
 

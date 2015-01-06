@@ -52,6 +52,13 @@ except ImportError:
          ' is installed: \n    pip install schema\n'
          'https://github.com/halst/schema')
     
+try:
+    import redis
+except ImportError:
+    exit('This example requires that `redis` interface to the Redis key-value store library'
+         ' is installed: \n    pip install redis\n'
+         'https://github.com/andymccurdy/redis-py')
+    
 
 
 # Default Golable System Variables
