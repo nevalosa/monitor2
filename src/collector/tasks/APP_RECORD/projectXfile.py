@@ -8,7 +8,7 @@ from lib import db_mysql
 from lib import common
 
 
-def conf_file_daily_num():
+def conf_file_daily_num(resource=None):
     '''
         Get daliy file num 
         Just yesterday because today is not finished
@@ -17,8 +17,11 @@ def conf_file_daily_num():
 
     TARGET_TABLE='apprec_file_daily_num'
 
-    DBCoon = db_mysql.connect(user='gsdba', passwd='yhnmkoert', 
-                        host='172.172.172.18', port=3306, db='gscf_file')
+    DBCoon = db_mysql.connect(user=resource['db']['user'], 
+                              passwd=resource['db']['passwd'], 
+                              host=resource['db']['host'], 
+                              port=resource['db']['port'], 
+                              db=resource['db']['db'])
 
     ''' Get Data '''
     # daily file #

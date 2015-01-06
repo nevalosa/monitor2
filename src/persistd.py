@@ -274,7 +274,7 @@ def main(args=None):
         
         # Last time for the thread to finish their work 
         time.sleep(1)
-        pass
+        return 0
     
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###
@@ -306,11 +306,6 @@ def _shutdown():
     errlogger.info("Daemon from pid file %s ended\n\n\n\n" % __pidfile__)
     
     return 0
-
-def load_ini_config():
-    '''Load the initail config file '''
-    pass
-
 
 if __name__ == '__main__':
     ''' 

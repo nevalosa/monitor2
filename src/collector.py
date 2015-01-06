@@ -21,6 +21,8 @@ Options:
 
 # System libs
 import json
+import logging
+import logging.handlers
 import os
 import Queue
 import sys
@@ -55,20 +57,74 @@ except ImportError:
 # Default Golable System Variables
 ''' pid file path '''
 __pidfile__     = '/tmp/collector.pid'
+
 ''' Access log path '''
-__logaccess__   = '/var/log/collector.log'
-''' Number of concurrency threads '''
-__thread_concurrency__ = 1
+__loggeneral__   = 'logs/general.log'
+__loggeneral_maxbytes__ = 100*1024*1024
+__loggeneral_num__ = 2
+
+''' Error log path '''
+__logerror__   = 'logs/error.log'
+__logerror_maxbytes__ = 100*1024*1024
+__logerror_num__ = 2
+
+''' Log Format '''
+LOG_FORMAT = '[%(asctime)s, "%(filename)s", line %(lineno)d] %(levelname)s: %(message)s'
+#LOG_FORMAT = '%(asctime)s [%(levelname)s] %(message)s'
+DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+
 ''' Max queue size of received messages from MQ Server, Zero means unlimit '''
 __mq_queue_size__ = 0 
 
 ''' Debug Switch '''
 DEBUG = False 
+
+#########################
+### Do not modify !!! ###
+#########################
+''' Program Infomation '''
+PROGRAM_NAME = None
+
 ''' Thread resources Queue '''
 THD_QUEUE = None
 
+''' Log '''
+errlogger = logging.getLogger('error')
+__loglevel__ = logging.DEBUG
 
-# Functions
+
+
+#################
+### Functions ###
+#################
+def log_init():
+    ''' log ''' 
+    # log: CRITICAL > ERROR > WARNING > INFO > DEBUG > NOTSET #
+    logFormatter = logging.Formatter(LOG_FORMAT, DATE_FORMAT)
+    
+    if DEBUG:
+        __loglevel__ = logging.DEBUG
+    else:
+        __loglevel__ = logging.INFO
+
+    # Add error log handler 
+    errlogger.setLevel(logging.DEBUG)
+
+    fileHandler = logging.handlers.RotatingFileHandler( \
+        __logerror__, mode='a', maxBytes=__logerror_maxbytes__, \
+        backupCount=__logerror_num__, encoding='utf8', delay=0)
+    fileHandler.setLevel(__loglevel__)
+    fileHandler.setFormatter(logFormatter)
+
+    errlogger.addHandler(fileHandler)
+    
+    # Add console log handler 
+    console = logging.StreamHandler()
+    console.setLevel(__loglevel__)
+    console.setFormatter(logFormatter)
+    
+    errlogger.addHandler(console)
+    
 def server_init():
     '''
     Initailize server environment
@@ -94,7 +150,7 @@ def handle_collecting_tasks():
         try:
             msg = THD_QUEUE.get(block=True, timeout=None)
         except Queue.Empty:
-            print "Queue is empty" #dev#
+            errlogger.warning("Queue is empty")
             continue
         except:
             traceback.print_exc() 
@@ -109,7 +165,7 @@ def handle_collecting_tasks():
             # Convert Dict Msg to Json String
             jSonStrMsg = json.dumps(msg)
             # Send Msg to MQ
-            print jSonStrMsg
+            errlogger.debug(jSonStrMsg)
             amqpProductor.sendMsg(jSonStrMsg)
         
         # Queue Recycle
@@ -122,13 +178,7 @@ def handle_collecting_tasks():
  
 def main(args=None):
     ''' Main Function'''
-    
-    #print(args)
-    
     try:
-        # Setup argument parser
-        print "I'm the master threads(Main.py)." #dev#
-        
         #Base config
         program_name = os.path.basename(sys.argv[0])
         
@@ -145,23 +195,33 @@ def main(args=None):
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###
         
-        print ("User Interrupt Catched.") #dev#
-        return 0
+        errlogger.info("User Interrupt Catched")
+        pass
+     
     except Exception, e:
         
-        indent = len(program_name) * " "
-        sys.stderr.write(program_name + ": " + repr(e) + "\n")
-        sys.stderr.write(indent + "  for help use --help")
-        return 2
+        errlogger.exception("Fatal error exiting")
+        pass
     
     finally:
-        pass
+        _shutdown()
+        sys.exit(2)
+        
+def _shutdown():
+    try:
+        pf = file(__pidfile__, 'r')
+        pid = int(pf.read().strip())
+        pf.close()
+    except:
+        pid = None
+        
+    if os.path.exists(__pidfile__):
+        os.remove(self.pidfile)
+        
+    errlogger.info("Daemon from pid file %s ended\n\n\n\n" % __pidfile__)
+    
+    return 0
   
-
-def load_ini_config():
-    '''Load the initail config file '''
-    pass
-
 
 if __name__ == '__main__':
     ''' 
@@ -237,6 +297,11 @@ if __name__ == '__main__':
     # Set Global System variables
     if True == args['--debug']:
         DEBUG = True
+     
+    # log 
+    log_init()
+    errlogger.info("%sing daemon from %s" % \
+        (args['ACTION'][0].upper() + args['ACTION'][1:], os.getcwd()))   
      
     # Real Main Func in Daemon
     if DEBUG:

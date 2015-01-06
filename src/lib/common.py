@@ -14,12 +14,15 @@ errlogger = logging.getLogger('error')
 
 ''' User Defined '''    
 # Common Functions
-    
 def fillMsgData(objName, values):
+    ''' 
+    Fill Msg Data With obj_name(monitor.table) and values, Just called by collector's tasks.
+    '''    
     msgBody = dict()
     msgBody["obj_name"] = objName
     msgBody["values"] = values
     return msgBody
+
 
 ''' System '''    
 def now():

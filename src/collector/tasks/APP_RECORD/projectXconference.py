@@ -7,8 +7,34 @@ Created on 2014-12-29
 from lib import db_mysql
 from lib import common
 
+def conf_num(resource=None):
+    '''
+        Get Total amount of conference
+    '''
+    TARGET_TABLE='apprec_conf_num'
+    DBCoon = db_mysql.connect(user=resource['db']['user'], 
+                              passwd=resource['db']['passwd'], 
+                              host=resource['db']['host'], 
+                              port=resource['db']['port'], 
+                              db=resource['db']['db'])
 
-def conf_daliy_num():
+    # Get Data    
+    mConf = db_mysql.Model('conf_info',DBCoon)
+    dataResult = mConf.field("count(*) AS num").where("1=1").find()
+    if dataResult == False:
+        return False
+    
+    # Set Value
+    values = dict()
+    values['type'] = 0
+    values['real_time'] = common.now()
+    values['conf_num'] = dataResult['num']
+    
+    # fill message body
+    msgBody = common.fillMsgData(TARGET_TABLE, values)
+    return msgBody
+
+def conf_daliy_num(resource=None):
     '''
         Get daliy and effective num of yesterday conference 
 
@@ -17,8 +43,11 @@ def conf_daliy_num():
 
     TARGET_TABLE='apprec_conf_daily_num'
 
-    DBCoon = db_mysql.connect(user='gsdba', passwd='yhnmkoert', 
-                        host='172.172.172.18', port=3306, db='gscf_conf')
+    DBCoon = db_mysql.connect(user=resource['db']['user'], 
+                              passwd=resource['db']['passwd'], 
+                              host=resource['db']['host'], 
+                              port=resource['db']['port'], 
+                              db=resource['db']['db'])
 
     ''' Get Data '''
     # daily conf #

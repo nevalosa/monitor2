@@ -25,9 +25,11 @@ errlogger = logging.getLogger('error')
 class Task(object):
     '''
     classdocs
+    
+    resources is a dict of tuple! whick likes [ {"DB":{"user":'root',"password":''}}, ... ]
     '''
 
-    def __init__(self, task=None, resource=dict(), interval=1, THD_QUEUE=Queue.Queue()):
+    def __init__(self, task=None, resources=tuple(), interval=1, THD_QUEUE=Queue.Queue()):
         '''
         Constructor
         '''
@@ -37,24 +39,26 @@ class Task(object):
         
         self._interval = interval
        
-        if resource is None:
-            self._resource = [0]
-        else: 
-            self._resource = resource
+        self._resources = resources
         
         self._THD_QUEUE = THD_QUEUE
         
         
     def run(self):
-        for val in self._resource:
-            # in a task 
+        if self._resources is None:
             new_thread = threading.Thread(target=self._task_processor)
             new_thread.daemon = True
             new_thread.start()
+        else: 
+            for val in self._resources:
+                # in a task 
+                new_thread = threading.Thread(target=self._task_processor, args=[val])
+                new_thread.daemon = True
+                new_thread.start()
         
             
     
-    def _task_processor(self):
+    def _task_processor(self,resource=None):
         #run task
         taskModlue = __import__(("tasks.%s.%s" % (self._taskMsgType, self._taskModuleName)), globals(), locals(), self._taskFuncName)
         taskFunc = getattr(taskModlue, self._taskFuncName)
@@ -64,7 +68,7 @@ class Task(object):
             time.sleep(self._interval)
                 
             # Run task
-            objMsgBody = taskFunc()
+            objMsgBody = taskFunc(resource)
             if objMsgBody is None:
                 continue
             elif objMsgBody == False:
@@ -75,19 +79,28 @@ class Task(object):
             msgBodyType = type(objMsgBody)
             if msgBodyType == types.DictType:
                 ''' type is dict ,direct insert into Queue '''
-                objMsg = self._addMsgCommonInfo(objMsgBody)
+                objMsg = self._addMsgCommonInfo(objMsgBody, resource)
                 self._putMsg2Queue(objMsg)
             elif msgBodyType == types.ListType:
                 ''' type is a List of dict, insert each one into Queue '''
                 for realObjMsgBody in objMsgBody:
-                    objMsg = self._addMsgCommonInfo(realObjMsgBody)
+                    objMsg = self._addMsgCommonInfo(realObjMsgBody, resource)
                     self._putMsg2Queue(objMsg)
             
     
-    def _addMsgCommonInfo(self,objMsgBody):
+    def _addMsgCommonInfo(self, objMsgBody, resource=None):
         objMsg = dict()
         objMsg["type"] = self._taskMsgType
-        objMsg["from"] = common.getHostName()
+        if resource is None:
+            objMsg["from"] = common.getHostName()
+        else:
+            if resource.has_key('mysql'):
+                objMsg["from"] = resource['mysql']['host']
+            elif resource.has_key('host'):
+                objMsg["from"] = resource['host']['ip']
+            else:
+                objMsg["from"] = 'Unknown'
+        objMsg["collecor"] = common.getHostName()
         objMsg["time"] = common.now()
         objMsg["content"] = objMsgBody
         return objMsg
@@ -104,11 +117,11 @@ class Task(object):
 def runTaskList(THD_QUEUE=Queue.Queue()):
     for taskInfo in tasklist.tasklist:
         interval = taskInfo['interval']
-        if taskInfo.has_key('resource'):
-            resource=taskInfo['resource']
+        if taskInfo.has_key('resources'):
+            resources=taskInfo['resources']
         else:
-            resource=None
-        task = Task(task=taskInfo, resource=resource, interval=interval, THD_QUEUE=THD_QUEUE)
+            resources=None
+        task = Task(task=taskInfo, resources=resources, interval=interval, THD_QUEUE=THD_QUEUE)
         task.run()
      
-     
+

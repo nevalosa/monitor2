@@ -7,14 +7,16 @@ Created on 2014-12-22
 from lib import db_mysql
 from lib import common
 
-
-def web_register_num():
+def apprec_user(resource=None):
     '''
-        Get web register num
+        Get Number of Users
     '''
-    TARGET_TABLE='apprec_user_web_num'
-    DBCoon = db_mysql.connect(user='admin', passwd='admin', 
-                        host='192.168.126.8', port=3306, db='gscf_user')
+    TARGET_TABLE='apprec_user'
+    DBCoon = db_mysql.connect(user=resource['mysql']['user'], 
+                              passwd=resource['mysql']['passwd'], 
+                              host=resource['mysql']['host'], 
+                              port=resource['mysql']['port'], 
+                              db=resource['mysql']['db'])
 
     # Get Data    
     mUser = db_mysql.Model('user',DBCoon)
@@ -42,7 +44,44 @@ def web_register_num():
     return msgBody
 
 
-def daily_sip_register():
+def user_num(resource=None):
+    '''
+        Get web register num
+    '''
+    TARGET_TABLE='apprec_user_num'
+    DBCoon = db_mysql.connect(user=resource['db']['user'], 
+                              passwd=resource['db']['passwd'], 
+                              host=resource['db']['host'], 
+                              port=resource['db']['port'], 
+                              db=resource['db']['db'])
+
+    # Get Data    
+    mUser = db_mysql.Model('user',DBCoon)
+    dataResult = mUser.field("count(*) AS num").where("1=1").find()
+    if dataResult == False:
+        return False
+    
+    webRegisterNum = dataResult['num']
+    
+    mGuest = db_mysql.Model('user_guest',DBCoon)
+    dataResult = mGuest.field("count(*) AS num").where("1=1").find()
+    if dataResult == False:
+        return False
+    webGuestNum = dataResult['num']
+    
+    # Set Value
+    values = dict()
+    values['type'] = 0
+    values['real_time'] = common.now()
+    values['register_user'] = webRegisterNum
+    values['guest_user'] = webGuestNum
+    
+    # fill message body
+    msgBody = common.fillMsgData(TARGET_TABLE, values)
+    return msgBody
+
+
+def daily_sip_register(resource=None):
     ''' 
         Get Daily Sip Max user and Min user 
     '''

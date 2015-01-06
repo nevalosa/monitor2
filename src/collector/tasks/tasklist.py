@@ -5,30 +5,131 @@ Created on 2014-12-02
 '''
 
 tasklist = [
-   
-#   {"type"     :"APP_RECORD",
-#    "module"   :"projctXuser", 
-#    "func"     :"web_register_num",
-#    "interval" :3600,
-#    "comment"  :"Total amount of register and unregister users", },
+            
+    # User #
+    {
+        "comment"  :"Collect: Number of Users,including register and unregister(guest) and so on.", 
+        "type"     :"APP_RECORD",
+        "module"   :"projectXuser", 
+        "func"     :"apprec_user",
+        "interval" :1,
+        "resources":[
+            {
+                "mysql" : { 
+                    "user"  : "gsdba", 
+                    "passwd": "yhnmkoert", 
+                    "host"  : "172.172.172.20", 
+                    "port"  : 3306, 
+                    "db"    : "gscf_user"
+                },
+                "redis" : { 
+                    "user"  : "gsdba", 
+                    "passwd": "yhnmkoert", 
+                    "host"  : "172.172.172.20", 
+                    "port"  : 3306, 
+                    "db"    : "gscf_user"
+                }
+            }
+        ],
+    },
+    
+    {
+        "comment"  :"Collect: Total amount of register and unregister(guest) users", 
+        "type"     :"APP_RECORD",
+        "module"   :"projectXuser", 
+        "func"     :"user_num",
+        "interval" :30,
+        "resources":[
+            {
+                "db" : { 
+                    "user"  : "gsdba", 
+                    "passwd": "yhnmkoert", 
+                    "host"  : "172.172.172.20", 
+                    "port"  : 3306, 
+                    "db"    : "gscf_user"
+                }
+            }
+        ],
+    },
 
-#   {"type"     :"APP_RECORD",
-#    "module"   :"projectXuser", 
-#    "func"     :"daily_sip_register",
-#    "interval" :86400,
-#    "comment"  :"Daily max or min sip register", },
+    {
+        "comment"  :"Analysis: Daily max or min sip register", 
+        "type"     :"APP_RECORD",
+        "module"   :"projectXuser", 
+        "func"     :"daily_sip_register",
+        "interval" :86400,
+        "resources":[
+            {
+                "db" : { 
+                    "user"  : "admin", 
+                    "passwd": "admin", 
+                    "host"  : "192.168.126.8", 
+                    "port"  : 3306, 
+                    "db"    : "monitor"
+                }
+            }
+        ],
+    },
   
-#   {"type"     :"APP_RECORD",
-#    "module"   :"projectXconference", 
-#    "func"     :"conf_daliy_num",
-#    "interval" :86400,
-#    "comment"  :"Number of daily conference", },
+    # Conference #
+    {
+        "comment"  :"Collect: Total amount of conference", 
+        "type"     :"APP_RECORD",
+        "module"   :"projectXconference", 
+        "func"     :"conf_num",
+        "interval" :30,
+        "resources":[
+            {
+                "db" : { 
+                    "user"  : "gsdba", 
+                    "passwd": "yhnmkoert", 
+                    "host"  : "172.172.172.20", 
+                    "port"  : 3306, 
+                    "db"    : "gscf_conf"
+                }
+            }
+        ],
+    },
+    
+    {
+        "comment"  :"Collect: Number of daily conference",
+        "type"     :"APP_RECORD",
+        "module"   :"projectXconference", 
+        "func"     :"conf_daliy_num",
+        "interval" :86400,
+        "resources":[
+            {
+                "db" : { 
+                    "user"  : "gsdba", 
+                    "passwd": "yhnmkoert", 
+                    "host"  : "172.172.172.20", 
+                    "port"  : 3306, 
+                    "db"    : "gscf_conf"
+                }
+            }
+        ],
+    },
 
-#   {"type"     :"APP_RECORD",
-#    "module"   :"projectXfile", 
-#    "func"     :"conf_file_daily_num",
-#    "interval" :86400,
-#    "comment"  :"Number of daily created files", },
+
+    # Files #
+    {
+        "comment"  :"Collect: Number of daily created files",
+        "type"     :"APP_RECORD",
+        "module"   :"projectXfile", 
+        "func"     :"conf_file_daily_num",
+        "interval" :86400,
+        "resources":[
+                {
+                    "db" : { 
+                        "user"  : "gsdba", 
+                        "passwd": "yhnmkoert", 
+                        "host"  : "172.172.172.20", 
+                        "port"  : 3306, 
+                        "db"    : "gscf_file"
+                    }
+                }
+            ], 
+    },
 
 ]
             
