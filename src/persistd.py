@@ -258,6 +258,7 @@ def handle_messagequeue_messags():
     
     # block until all tasks are done
     THD_QUEUE.join()
+    errlogger.info("All tasks have done, THD_QUEUE exits")
    
  
 def main(args=None):

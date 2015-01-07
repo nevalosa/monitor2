@@ -22,6 +22,8 @@ import time
 
 from proton import *
 
+''' Log '''
+errlogger = logging.getLogger('error')
 
 def example():
     '''
@@ -89,9 +91,8 @@ class Consumer(object):
         while self._mng.incoming:
             try:
                 self._mng.get(self._msg)
-            except Exception, e:
-                errmsg = str(e)
-                errlog(errmsg)
+            except:
+                errlogger.exception("AMQP get failed")
                 return None
             return self._msg.body
 
