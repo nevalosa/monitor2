@@ -40,6 +40,7 @@ def example():
     mng = Messenger()
     mng.password=password
     mng.start()
+    mng.incoming_window = 10
     mng.subscribe("amqp://%s@%s:%d/%s"%(user, host, port, destination))
 
     count = 0
