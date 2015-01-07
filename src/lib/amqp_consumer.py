@@ -82,6 +82,7 @@ class Consumer(object):
 
         self._mng.password=password
         self._mng.start()
+        self._mng.incoming_window = 10
         self._mng.subscribe("amqp://%s@%s:%d/%s"%(user, host, port, destination))
 
     def getMsg(self):
