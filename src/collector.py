@@ -24,6 +24,7 @@ import json
 import logging
 import logging.handlers
 import os
+import platform
 import Queue
 import sys
 import threading
@@ -163,10 +164,8 @@ def handle_collecting_tasks():
             traceback.print_exc() 
    
         # send msg to MQ
-        if DEBUG:
-            print msg
-            pass
-        else:
+        
+        if "Linux" == platform.system():
             from lib import amqp_producer
             amqpProductor = amqp_producer.Productor()
             # Convert Dict Msg to Json String
@@ -174,6 +173,9 @@ def handle_collecting_tasks():
             # Send Msg to MQ
             errlogger.debug(jSonStrMsg)
             amqpProductor.sendMsg(jSonStrMsg)
+        elif 'Windows' == platform.system():
+            print msg
+            pass
         
         # Queue Recycle
         THD_QUEUE.task_done()
@@ -311,9 +313,7 @@ if __name__ == '__main__':
         (args['ACTION'][0].upper() + args['ACTION'][1:], os.getcwd()))   
      
     # Real Main Func in Daemon
-    if DEBUG:
-        main(args)
-    else:
+    if "Linux" == platform.system():
         from lib import daemonize
         daemon = daemonize.Daemonize(pidfile=__pidfile__, action=main, args=args)
         if 'start'== args['ACTION']:
@@ -322,6 +322,8 @@ if __name__ == '__main__':
             daemon.stop()
         elif 'restart' == args['ACTION']:
             daemon.restart()
+    elif "Windows" == platform.system():
+        main(args)
 
     sys.exit(0)
 
