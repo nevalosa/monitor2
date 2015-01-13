@@ -37,25 +37,31 @@
             
             <div class="col-md-12">
 	            <div class="col-md-12">
-	                <div id="realTimeChart" style="width:100%; height:300px;"></div>
+	                <div id="realTimeChart" style="width:100%; height:300px;" yAxis_title="Number" ></div>
 	            </div>
 	            
-	            <div class="col-md-12" id="ajaxDistrict">
+	            <div class="col-md-12" id="ajaxDatePicker">
 	                <div class="radio">
-	                                  
-	                    <div class="col-md-9">
-	                    <label><input type="radio" name="district" value="normal" checked=true>Today</label>
-	                    <label><input type="radio" name="district" value="Day">Last Day</label>
-	                    <label><input type="radio" name="district" value="Week">Last Week</label>
-	                    <label><input type="radio" name="district" value="Month">Last Month</label>
-	                    <label><input type="radio" name="district" value="Year">Last Season</label>
-	                    <label><input type="radio" name="district" value="Year">Last Year</label>
-	                    </div>  
-	                    <div class="col-md-3">
-	                        <label><input type="radio" name="district" value="remember-me">Time:Start-End</label>
-	                    </div> 
+	                    <div class="col-md-9 col-lg-12">
+	                    <label><input type="radio" id="date_today"name="district" value="today" checked=true>Today</label>
+	                    <label><input type="radio" id="date_yesterday"   name="district" value="yesterday">Last Day</label>
+	                    <label><input type="radio" id="date_week"  name="district" value="week">Last Week</label>
+	                    <label><input type="radio" id="date_month" name="district" value="month">Last Month</label>
+	                    <label><input type="radio" id="date_season"  name="district" value="season">Last Season</label>
+	                    <label><input type="radio" id="date_year"  name="district" value="year">Last Year</label>
+	                    <label>
+                            <input type="radio" id="date_range" name="district" value="range" style="margin-top:8px;">
+	                        <div id="datepicker" class="input-daterange"  style="width: 240px;">
+		                        <label style="padding-left:0px";>From</label>
+	                            <label style="padding-left:0px";><input type="text" class="input-sm form-control" name="start" style="width:90px;" /></label>
+	                            <label style="padding-left:0px";>to</label>
+	                            <label style="padding-left:0px";><input type="text" class="input-sm form-control" name="end" style="width:90px;"/></label>
+                            </div> 
+	                    </label>
+	                    </div>
 	                </div>
 	            </div>
+	            
             </div>
           
             
@@ -70,10 +76,10 @@
 			        <div class="panel-body">
                     <div class="checkbox">			         
 			            <div class="col-sm-12">
-                        <label><input type="checkbox" value="SipOnlineUser" checked=true>SIP Online User&nbsp</label>
-                        <label><input type="checkbox" value="WebOnlineUser">Web Online User&nbsp</label>
-                        <label><input type="checkbox" value="RegisteredUser">Registered User&nbsp</label>
-                        <label><input type="checkbox" value="Guest">Guest&nbsp</label>
+                        <label style="color: #2f7ed8;"><input type="checkbox" value="SipOnlineUser" checked=true>SIP Online User&nbsp</label>
+                        <label style="color: #0d233a;"><input type="checkbox" value="WebOnlineUser">Web Online User&nbsp</label>
+                        <label style="color: #8bbc21;"><input type="checkbox" value="RegisteredUser">Registered User&nbsp</label>
+                        <label style="color: #910000;"><input type="checkbox" value="Guest">Guest&nbsp</label>
                         </div>
                     </div>
 			            

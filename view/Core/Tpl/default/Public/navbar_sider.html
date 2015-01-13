@@ -1,27 +1,63 @@
 <div class="col-sm-3 col-md-2 sidebar">
-    <ul class="nav nav-sidebar">
-        <if condition="MODULE_NAME eq 'Index'"><li class="active"><else /><li></if>
-            <a href="__APP__/Overview">Overview</a>
+   
+    <ul class="nav nav-sidebar" >
+        <if condition="MODULE_NAME eq 'Overview'"><li class="active"><else /><li></if>
+            <a href="__APP__/Overview" class="nav-list">Overview</a>
         </li>
-        <li><a href="#">Reports</a></li>
-        <li><a href="#">Analytics</a></li>
-	    <li><a href="#">Export</a></li>
-    </ul>
-    
-	<ul class="nav nav-sidebar">
-	    <if condition="MODULE_NAME eq 'Customer'"><li class="active"><else /><li></if>
-	    	<a href="__APP__/Customer">Customer Infomation</a>
-	    </li>
-	    <if condition="MODULE_NAME eq 'Conference'"><li class="active"><else /><li></if>
-            <a href="__APP__/Conference">Conference Infomation</a>
+        
+        <if condition="MODULE_NAME eq 'Reports'"><li class="active"><else /><li></if>
+            <a href="__APP__/Reports" class="nav-list">Reports</a>
         </li>
-	    <if condition="MODULE_NAME eq 'FileStorage'"><li class="active"><else /><li></if>
+        
+        <if condition="MODULE_NAME eq 'Analytics'"><li class="active"><else /><li></if>
+            <a href="__APP__/Analytics" class="nav-list">Analytics</a>
+        </li>
+        
+        <if condition="MODULE_NAME eq 'Export'"><li class="active"><else /><li></if>
+            <a href="__APP__/Export" class="nav-list">Export</a>
+        </li>
+        
+        <li>
+            <a href="#SideNav_Customer" class="nav-header collapsed" data-toggle="collapse">
+            Customer Infomation<span class="glyphicon glyphicon-chevron-down"></span>
+            </a>
+            <ul id="SideNav_Customer" class="nav collapse <if condition="MODULE_NAME eq 'Customer' || ($SideNavStatus['SideNav_Customer'] eq 'on')">in</if>" >
+                <li class="nav <if condition="MODULE_NAME eq 'Customer' && ACTION_NAME eq 'live'">active</if>">
+                    <a href="__APP__/Customer/live" class="nav-list">Live Data</a>
+                </li>
+                <li class="nav <if condition="MODULE_NAME eq 'Customer' && ACTION_NAME eq 'statistics'">active</if>">
+                    <a href="__APP__/Customer/statistics" class="nav-list">Statistics Data</a>
+                </li>
+                <li class="nav <if condition="MODULE_NAME eq 'Customer' && ACTION_NAME eq 'other'">active</if>">
+                    <a href="__APP__/Customer/other" class="nav-list">Other Data</a>
+                </li>
+           </ul>
+        </li>
+        
+        <li>
+            <a href="#SideNav_Conference" class="nav-header collapsed" data-toggle="collapse">
+            Conference Infomation<span class="glyphicon glyphicon-chevron-down"></span>
+            </a>
+            <ul id="SideNav_Conference" class="nav collapse <if condition="(MODULE_NAME eq 'Conference') || ($SideNavStatus['SideNav_Conference'] eq 'on')">in</if>" >
+                <li class="nav <if condition="MODULE_NAME eq 'Conference' && ACTION_NAME eq 'live'">active</if>">
+                    <a href="__APP__/Conference/live" class="nav-list">Live Data</a>
+                </li>
+                <li class="nav <if condition="MODULE_NAME eq 'Conference' && ACTION_NAME eq 'statistics'">active</if>">
+                    <a href="__APP__/Customer/statistics" class="nav-list">Statistics Data</a>
+                </li>
+                <li class="nav <if condition="MODULE_NAME eq 'Conference' && ACTION_NAME eq 'other'">active</if>">
+                    <a href="__APP__/Customer/other" class="nav-list">Other Data</a>
+                </li>
+           </ul>
+        </li>
+        
+        <if condition="MODULE_NAME eq 'FileStorage'"><li class="active"><else /><li></if>
             <a href="__APP__/FileStorage">File Storage</a>
         </li>
-    </ul>
-    <ul class="nav nav-sidebar">
+        
         <if condition="MODULE_NAME eq 'Example'"><li class="active"><else /><li></if>
-            <a href="__APP__/Example">Chart Example</a>
+            <a href="__APP__/Example" class="nav-list">Chart Example</a>
         </li>
     </ul>
+    
 </div>

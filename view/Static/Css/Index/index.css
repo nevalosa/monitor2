@@ -61,11 +61,17 @@ body {
 }
 .nav-sidebar > .active > a,
 .nav-sidebar > .active > a:hover,
-.nav-sidebar > .active > a:focus {
+.nav-sidebar > .active > a:focus,
+.nav-sidebar > li > ul > .active > a
+{
   color: #fff;
   background-color: #428bca;
 }
 
+.nav-sidebar > li > ul > li > a {
+  padding-right: 20px;
+  padding-left: 25px;
+}
 
 /*
  * Main content

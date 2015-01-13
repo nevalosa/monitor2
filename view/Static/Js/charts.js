@@ -1,27 +1,8 @@
-//-------------------prepare data----------------------//
-$(document).ready(function() {
-	// Set Time
-	calculateDate();
-	
-	// Bind Click Event
-	$("#ajaxDistrict :radio").click(function(){
-		rewriteChart()
-	});
-	$("#ajaxHosts :checkbox").click(function(){
-		rewriteChart()
-	});
-	$("#ajaxOptions :checkbox").click(function(){
-		rewriteChart()
-	});
-	
-	// Write Init Chart
-	rewriteChart();
-});
 
 // Global Chart Data Cache
 var ChartDataCache={};
 /*
-ChartDataCache['172.172.172.18_day_siponlineuser']={
+ChartDataCache['172.172.172.18_daystart_dayend_siponlineuser']={
         name: 'data1',
         data: [
 			[Date.UTC(2015,  1, 4,10,0,0), 1   ],
@@ -31,65 +12,40 @@ ChartDataCache['172.172.172.18_day_siponlineuser']={
         ]
 	};
 */
-// Get Chart Params for Ajax
-function getChartParams(){
-	params = {"type":"normal",
-			"start":"2014-01-05 00:00:00",
-			"end":"2015-01-05 00:00:00"
-	}
-	return params
-}
+
+
 
 //ajax rewrite chart
 function rewriteChart(){
-	//$('#debugframe').html("a")
+	// Get ajax link params (jSon Format)
+	var chartParam=getChartParams();
 	
-	//$('#debugframe').html(JSON.stringify(ChartDataCache))
+	// Get series data
 	var seriesVal=[];
-	
-	/*
-	$("#ajaxHosts :checkbox").each(function(hostIndex,hostElement ){
-		if(hostElement.checked == true){
-			$("#ajaxOptions :checkbox").each(function(optIndex,optElement ){
-				if(optElement.checked == true){
-					//Get Data Cache's Key
-					combineKey = hostElement.value+'_day_'+optElement.value;
-					//if  Data Cache not exists, get value from ajax
-					if(typeof(ChartDataCache[combineKey])=="undefined"){
-						ajaxData=requestAjax('/index.php/'+ajaxModuleName+'/'+optElement.value,
-							getChartParams(), dataFormat);
-						ChartDataCache[combineKey]={
-						        name: hostElement.value+'\'s '+optElement.value,
-						        data: ajaxData
-							};
-						seriesVal.push(ChartDataCache[combineKey]);
-					}
-					//Data Cache exists, add it to the 'Chart Series'
-					else{ 
-						seriesVal.push(ChartDataCache[combineKey]);
-					}
-				}
-			});
-		}			
-	    	
-	});
-	*/
-	
 	$("#ajaxOptions :checkbox").each(function(optIndex,optElement ){
 		if(optElement.checked == true){
 			
 			if( $("#ajaxHost :checkbox").length ==0 )
 			{
 				//Get Data Cache's Key
-				combineKey = optElement.value + "_day_";
+				combineKey = optElement.value + chartParam['start'] +  chartParam['end'];
 				//if  Data Cache not exists, get value from ajax
 				if(typeof(ChartDataCache[combineKey])=="undefined"){
+					//get data
 					ajaxData=requestAjax('/index.php/'+ajaxModuleName+'/'+optElement.value,
 						getChartParams(), dataFormat);
+					//get color
+					//console.log(optElement);
+					rgbColor = $(optElement).parent().css('color');
+					hexColor = rgb2hex(rgbColor);
+					//set cache
 					ChartDataCache[combineKey]={
 					        name: optElement.value,
+					        color: hexColor,
+					        //symbol: 'circle', //circle/square/diamond/triangle/triangle-down"
 					        data: ajaxData
 						};
+					//set data
 					seriesVal.push(ChartDataCache[combineKey]);
 				}
 				//Data Cache exists, add it to the 'Chart Series'
@@ -98,7 +54,8 @@ function rewriteChart(){
 				}
 			}
 			else
-			{
+			{	// with multiple hosts
+				/*
 				$("#ajaxHosts :checkbox").each(function(hostIndex,hostElement ){
 					if(hostElement.checked == true){
 						//Get Data Cache's Key
@@ -120,33 +77,56 @@ function rewriteChart(){
 					}			
 				    	
 				});
+				*/
 			}
 		}
 	});
 	
+	//Other config
+	yAxis_title = $('#realTimeChart').attr('yAxis_title');
+	
+	//run real time chart
+	realTimeChart(seriesVal, yAxis_title);
+	
+	//run other chart
 	
 	
-	
-	var title, xAxis, yAxis, tooltip, url;
-	
-	var chartType='spline'
-	
-	
+	return true;
+}
+
+function realTimeChart(seriesVal, yAxis_title){
+	// Set Chart Style
 	$('#realTimeChart').highcharts({
 		// Default False
     	credits:{
-   	     enabled:false
+    		enabled:false
 	   	},
 	   	legend:{
 	  	     enabled:false
 	   	},
-	   	
 	   	// Optional
     	chart: {
-            type: chartType                         //指定图表的类型，默认是折线图（line）
+            type: 'spline',                         //指定图表的类型，默认是折线图（line）
+        },
+        plotOptions: {
+        	spline: {
+                lineWidth: 2,
+                states: {
+                    hover: {
+                        lineWidth: 3
+                    }
+                },
+                marker: {
+                    enabled: false,
+                    symbol:"circle"
+                }
+            }
         },
         title: {
             text: 'My first Highcharts chart'      //指定图表标题
+        },
+        tooltip: {
+            crosshairs: [true]
         },
         xAxis: { 
         	type: 'datetime',
@@ -155,8 +135,8 @@ function rewriteChart(){
         		second: '%H:%M:%S',
         		minute: '%H:%M',
         		hour: '%H:%M',
-        		day: '%y/%m/%d',
-        		week: '%y/%m/%d',
+        		day: '%b %d',
+        		week: '%y-%m-%d',
         		month: '%b \'%y',
         		year: '%Y'
         	},
@@ -166,9 +146,9 @@ function rewriteChart(){
         },
         yAxis: {
             title: {
-                text: 'something'                  //指定y轴的标题
+                text: yAxis_title                  //指定y轴的标题
             },
-            min: 0
+            //min: 0
         },
         series: seriesVal
     });
@@ -193,9 +173,77 @@ function requestAjax(url, param, next){
 	return result;
 }
 
+//Get Chart Params for Ajax
+function getChartParams(){
+	//variables
+	paramStart="";
+	paramEnd="";
+	paramType="";
+	
+	//Get checked date picker radio.
+	date_checked=$("#ajaxDatePicker :radio:checked")[0];
+	
+	//Set Start and End Time: xxxx-xx-xx xx:xx:xx
+	switch(date_checked.value)
+	{
+		case 'today':
+			paramType="normal";
+			paramStart=day_start_str;
+			paramEnd=day_end_str;
+			break;
+		case 'yesterday':
+			paramType="normal";
+			paramStart=yesterday_start_str;
+			paramEnd=yesterday_end_str;
+			break;
+		case 'week':
+			paramType="day";
+			paramStart=week_start_str;
+			paramEnd=week_end_str;
+			break;
+		case 'month':
+			paramType="day";
+			paramStart=month_start_str;
+			paramEnd=month_end_str;
+			break;
+		case 'season':
+			paramType="week";
+			paramStart=season_start_str;
+			paramEnd=season_end_str;
+			break;
+		case 'year':
+			paramType="month";
+			paramStart=year_start_str;
+			paramEnd=year_end_str;
+			break;
+		case 'range':
+			paramType="normal";
+			inStart=$('#datepicker :input')[0];
+			inEnd=$('#datepicker :input')[1];
+			paramStart=inStart.value + " 00:00:00";
+			paramEnd=inEnd.value + " 00:00:00";
+			break;
+		default:
+			paramType="normal";
+			paramStart=day_start_str;
+			paramEnd=day_end_str;
+			break;
+	}
+	
+	
+	params = {
+		"type":"normal",
+		"start":paramStart,
+		"end":paramEnd
+	}
+
+	return params
+}
+
 //calculate time range
 function calculateDate(){
 	var date_today = new Date();
+	var date_dayago =  new Date(date_today.getTime() - 1*24*60*60*1000);
 	var date_weekago =  new Date(date_today.getTime() - 7*24*60*60*1000);
 	var date_monthago =  new Date(date_today.getTime() - 30*24*60*60*1000);
 	var date_seasonago =  new Date(date_today.getTime() - 90*24*60*60*1000);
@@ -205,6 +253,9 @@ function calculateDate(){
 	endpoint = " 23:59:59";
 	var date_today_str = date_today.format("yyyy-MM-dd") + zeropoint;
 
+	//yesterday
+	yesterday_start_str=date_dayago.format("yyyy-MM-dd") + zeropoint;
+	yesterday_end_str=date_today_str;
 	//day
 	day_start_str =  date_today.format("yyyy-MM-dd") + zeropoint;
 	day_end_str = date_today.format("yyyy-MM-dd hh:mm:ss");

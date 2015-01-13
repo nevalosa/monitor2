@@ -12,5 +12,10 @@ class CustomerAction extends CommonAction
     {
         $this->display();
     }
+    
+    public function live()
+    {
+        $this->display();
+    }
 }
 ?>
