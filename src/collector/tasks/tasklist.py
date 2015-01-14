@@ -8,7 +8,7 @@ tasklist = [
             
     # User #
     {
-        "enable"   : False,
+        "enable"   : True,
         "comment"  : "Collect: Number of Users,including register and unregister(guest) and so on.", 
         "type"     : "APP_RECORD",
         "module"   : "projectXuser", 
@@ -33,7 +33,7 @@ tasklist = [
     },
     
     {
-        "enable"   : False,
+        "enable"   : True,
         "comment"  :"Calculate Average Data from 'apprec_user' to speedup long term chart display", 
         "type"     :"APP_RECORD",
         "module"   :"projectXuser", 
@@ -53,7 +53,7 @@ tasklist = [
     },
             
     {
-        "enable"   : False,
+        "enable"   : True,
         "comment"  :"Analysis: Daily max or min user", 
         "type"     :"APP_RECORD",
         "module"   :"projectXuser", 
@@ -75,7 +75,7 @@ tasklist = [
     
     # Conference #
     {
-        "enable"   : False,
+        "enable"   : True,
         "comment"  :"Collect: Total amount of conference", 
         "type"     :"APP_RECORD",
         "module"   :"projectXconference", 
@@ -121,7 +121,7 @@ tasklist = [
 
     # Files #
     {
-        "enable"   : False,
+        "enable"   : True,
         "comment"  :"Collect: Number of daily created files",
         "type"     :"APP_RECORD",
         "module"   :"projectXfile", 
