@@ -5,6 +5,7 @@ Created on 2014-12-02
 '''
 import logging
 import Queue
+import random
 import socket
 import threading
 import time
@@ -63,9 +64,14 @@ class Task(object):
         taskModlue = __import__(("tasks.%s.%s" % (self._taskMsgType, self._taskModuleName)), globals(), locals(), self._taskFuncName)
         taskFunc = getattr(taskModlue, self._taskFuncName)
 
+        HAVE_RAN = False
         while(True):
             # Sleep first, then run!
-            time.sleep(self._interval)
+            if HAVE_RAN == False:
+                time.sleep(random.randint(1, 3))
+                HAVE_RAN = True
+            else:
+                time.sleep(self._interval)
                 
             # Run task
             objMsgBody = taskFunc(resource)
@@ -116,6 +122,9 @@ class Task(object):
         
 def runTaskList(THD_QUEUE=Queue.Queue()):
     for taskInfo in tasklist.tasklist:
+        if taskInfo['enable'] == False:
+            continue
+        
         interval = taskInfo['interval']
         if taskInfo.has_key('resources'):
             resources=taskInfo['resources']

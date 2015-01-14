@@ -45,7 +45,7 @@ def apprec_conf(resource=None):
     values['type'] = 0
     values['real_time'] = common.now()
     values['total'] = conf_total
-    values['sip_conf'] = sipOnlineNum
+    values['sip_online_conf'] = sipOnlineNum
     
     # fill message body
     msgBody = common.fillMsgData(TARGET_TABLE, values)
@@ -84,7 +84,7 @@ def apprec_conf_statistics(resource=None):
    
     ''' Set Value '''
     values = dict()
-    values['type'] = 0
+    values['type'] = 2
     values['real_time'] = "%s 23:59:59" % yesterday
     values['conf_num'] = yesterdayConfNum
     values['conf_effective_num'] = yesterdayConfEffectiveNum

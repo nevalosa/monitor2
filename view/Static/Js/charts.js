@@ -13,7 +13,19 @@ ChartDataCache['172.172.172.18_daystart_dayend_siponlineuser']={
 	};
 */
 
-
+//for debug: get url when draw a chart with ajax date 
+function debugGetChartDataUrl(ajaxModuleName, ajaxActionName, AjaxJSONParams)
+{
+	strParams = "";
+	for(key in AjaxJSONParams){
+		if(strParams != ""){
+			strParams += '&';
+		}
+		strParams += key+"="+AjaxJSONParams[key];
+	}
+	ajaxUrl = '/index.php/'+ajaxModuleName+'/'+ajaxActionName+'?h=true&'+strParams;
+	console.log('Get chart data from: ' + ajaxUrl);
+}
 
 //ajax rewrite chart
 function rewriteChart(){
@@ -32,8 +44,9 @@ function rewriteChart(){
 				//if  Data Cache not exists, get value from ajax
 				if(typeof(ChartDataCache[combineKey])=="undefined"){
 					//get data
+					debugGetChartDataUrl(ajaxModuleName, optElement.value, chartParam);
 					ajaxData=requestAjax('/index.php/'+ajaxModuleName+'/'+optElement.value,
-						getChartParams(), dataFormat);
+							chartParam, dataFormat);
 					//get color
 					//console.log(optElement);
 					rgbColor = $(optElement).parent().css('color');
@@ -107,6 +120,7 @@ function realTimeChart(seriesVal, yAxis_title){
 	   	// Optional
     	chart: {
             type: 'spline',                         //指定图表的类型，默认是折线图（line）
+            zoomType: 'x',
         },
         plotOptions: {
         	spline: {
@@ -160,7 +174,7 @@ function realTimeChart(seriesVal, yAxis_title){
 function requestAjax(url, param, next){
 	var result;
 	$.ajax({
-		type: "get",
+		type: "post",
 		url : url,
 		data : param,
 		async: false,
@@ -182,62 +196,80 @@ function getChartParams(){
 	
 	//Get checked date picker radio.
 	date_checked=$("#ajaxDatePicker :radio:checked")[0];
+	//console.log(date_checked);
 	
 	//Set Start and End Time: xxxx-xx-xx xx:xx:xx
 	switch(date_checked.value)
 	{
 		case 'today':
-			paramType="normal";
 			paramStart=day_start_str;
 			paramEnd=day_end_str;
 			break;
 		case 'yesterday':
-			paramType="normal";
 			paramStart=yesterday_start_str;
 			paramEnd=yesterday_end_str;
 			break;
 		case 'week':
-			paramType="day";
 			paramStart=week_start_str;
 			paramEnd=week_end_str;
 			break;
 		case 'month':
-			paramType="day";
 			paramStart=month_start_str;
 			paramEnd=month_end_str;
 			break;
 		case 'season':
-			paramType="week";
 			paramStart=season_start_str;
 			paramEnd=season_end_str;
 			break;
 		case 'year':
-			paramType="month";
 			paramStart=year_start_str;
 			paramEnd=year_end_str;
 			break;
 		case 'range':
-			paramType="normal";
 			inStart=$('#datepicker :input')[0];
 			inEnd=$('#datepicker :input')[1];
 			paramStart=inStart.value + " 00:00:00";
 			paramEnd=inEnd.value + " 00:00:00";
 			break;
 		default:
-			paramType="normal";
 			paramStart=day_start_str;
 			paramEnd=day_end_str;
 			break;
 	}
 	
+	paramType=calRecordDataType(paramStart,paramEnd);
 	
 	params = {
-		"type":"normal",
-		"start":paramStart,
-		"end":paramEnd
+		"type"	: paramType,
+		"start"	: paramStart,
+		"end"	: paramEnd
 	}
-
+	
 	return params
+}
+
+// from start and end time to decide the Record Data Type which send to ajax php page,
+// Used by js function "getChartParams()"
+function calRecordDataType(paramStart,paramEnd)
+{
+	start 	= new Date(paramStart).getTime();
+	end		= new Date(paramEnd).getTime();
+	range =  end - start;
+	// < 7 day
+	if(range>0 && range<=7*24*60*60*1000){
+		return 'normal';
+	}
+	// > 7 day
+	else if(range>7*24*60*60*1000 && range <= 365*24*60*60*1000){
+		return 'day';
+	}
+	// > 1 year
+	else if(range>365*24*60*60*1000){
+		return 'day';
+	}
+	else{
+		return 'normal';
+	}
 }
 
 //calculate time range

@@ -6,7 +6,7 @@ class AjaxChartDataAction extends CommonAction
     //////////////////
     public function getChartData($modelName,$modelFunc,$dataName="real_time",$valName="num",$dataZoom=1)
     {
-        $LIMITMAX = 25; //Max num of dispkay data
+        $LIMITMAX = 100; //Max num of dispkay data
 
         //$REQUEST
         if(empty($_REQUEST['start']) || empty($_REQUEST['end']))
@@ -19,9 +19,9 @@ class AjaxChartDataAction extends CommonAction
             $end    = $_REQUEST['end'];
         }
 
-        // default 'Normal(0)'
-        $type   = empty($_REQUEST['type'])  ? '0'  : $_REQUEST['type'];
-        
+        // default 'Normal(0)', reference to "config.php's _RECORDDATATYPE" which is "C('_RECORDDATATYPE')"
+        $type   = empty($_REQUEST['type'])  ? '0'  : C('_RECORDDATATYPE')[$_REQUEST['type']];
+                
         // conditions
         $cond = empty($_REQUEST['cond'])    ? ''   : $_REQUEST['cond'];
 

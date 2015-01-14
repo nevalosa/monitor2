@@ -13,3 +13,4 @@ define('SMTPSERVERPORT', '25' );				//SMTP服务器端口
 define('SMTPUSERMAIL', '"WestLakeTostermasterClub_SAA" <zhangzr1026@163.com>' );//SMTP服务器的用户邮箱
 define('SMTPUSER', 'zhangzr1026@163.com' );	//SMTP服务器的用户帐号
 define('SMTPPASS', 'lonelyisnotalone');
+

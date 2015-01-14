@@ -31,7 +31,7 @@
             
             <div class="col-md-12">
 	            <div class="col-md-12">
-	                <div id="realTimeChart" style="width:100%; height:300px;" yAxis_title="Number" ></div>
+	                <div id="realTimeChart" style="width:100%; height:300px;" yAxis_title="{$yAxis_title}" ></div>
 	            </div>
 	            
 	            <div class="col-md-12" id="ajaxDatePicker">
@@ -66,14 +66,15 @@
             <div class="row" id="ajaxOptions">
                 <div class="col-sm-12 col-md-12 col-lg-12">
                 <div class="panel panel-default">
-                    <div class="panel-heading"><h3 class="panel-title">General Situation </h3></div>
+                    <div class="panel-heading"><h3 class="panel-title">Online Situation</h3></div>
 			        <div class="panel-body">
                     <div class="checkbox">			         
 			            <div class="col-sm-12">
                         <label style="color: #2f7ed8;"><input type="checkbox" value="SipOnlineUser" checked=true>SIP Online User&nbsp</label>
-                        <label style="color: #0d233a;"><input type="checkbox" value="WebOnlineUser">Web Online User&nbsp</label>
-                        <label style="color: #8bbc21;"><input type="checkbox" value="RegisteredUser">Registered User&nbsp</label>
-                        <label style="color: #910000;"><input type="checkbox" value="Guest">Guest&nbsp</label>
+                        <label style="color: #2f7ec1;"><input type="checkbox" value="PcOnlineUser" disabled="disabled">PC Online User&nbsp</label>
+                        <label style="color: #2f7eb3;"><input type="checkbox" value="MobileOnlineUser" disabled="disabled">Mobile Online User&nbsp</label>
+                        <label style="color: #2f7ea5;"><input type="checkbox" value="WebOnlineUser" disabled="disabled">Web Online User&nbsp</label>
+                        
                         </div>
                     </div>
 			            
@@ -83,14 +84,14 @@
 		        
 		        <div class="col-sm-12 col-md-6 col-lg-6">
                 <div class="panel panel-default">
-                    <div class="panel-heading"><h3 class="panel-title">Web User Type</h3></div>
+                    <div class="panel-heading"><h3 class="panel-title">Register Situation</h3></div>
                     <div class="panel-body">
                     <div class="checkbox">                   
                         <div class="col-sm-6">
-                        <label><input type="checkbox" value="remember-me">Regisiter User</label>
+                        <label style="color: #8bbc21;"><input type="checkbox" value="RegisteredUser">Registered User&nbsp</label>      
                         </div>
                         <div class="col-sm-6">
-                        <label><input type="checkbox" value="remember-me">Guest User</label>
+                        <label style="color: #8bbc81;"><input type="checkbox" value="Guest">Guest&nbsp</label>
                         </div>
                     </div>
                         
@@ -100,14 +101,14 @@
                 
                 <div class="col-sm-12 col-md-6 col-lg-6">
                 <div class="panel panel-default">
-                    <div class="panel-heading"><h3 class="panel-title">Sip User Type</h3></div>
+                    <div class="panel-heading"><h3 class="panel-title">Sip Online User Type</h3></div>
                     <div class="panel-body">
                     <div class="checkbox">                   
                         <div class="col-sm-6">
-                        <label><input type="checkbox" value="remember-me">Type 1</label>
+                        <label style="color: #ff0000"><input type="checkbox" value="SipOnlineType1" disabled="disabled">Type 1&nbsp</label>
                         </div>
                         <div class="col-sm-6">
-                        <label><input type="checkbox" value="remember-me">Type 2</label>
+                        <label style="color: #ff00aa"><input type="checkbox" value="SipOnlineType2" disabled="disabled">Type 2&nbsp</label>
                         </div>
                     </div>
                         

@@ -8,12 +8,13 @@ tasklist = [
             
     # User #
     {
-        "comment"  :"Collect: Number of Users,including register and unregister(guest) and so on.", 
-        "type"     :"APP_RECORD",
-        "module"   :"projectXuser", 
-        "func"     :"apprec_user",
-        "interval" :30,
-        "resources":[
+        "enable"   : False,
+        "comment"  : "Collect: Number of Users,including register and unregister(guest) and so on.", 
+        "type"     : "APP_RECORD",
+        "module"   : "projectXuser", 
+        "func"     : "apprec_user",
+        "interval" : 30,
+        "resources": [
             {
                 "mysql" : { 
                     "user"  : "gsdba", 
@@ -32,6 +33,27 @@ tasklist = [
     },
     
     {
+        "enable"   : False,
+        "comment"  :"Calculate Average Data from 'apprec_user' to speedup long term chart display", 
+        "type"     :"APP_RECORD",
+        "module"   :"projectXuser", 
+        "func"     :"apprec_user_avg",
+        "interval" :86400,
+        "resources":[
+            {
+                "mysql" : { 
+                    "user"  : "admin", 
+                    "passwd": "admin", 
+                    "host"  : "192.168.126.8", 
+                    "port"  : 3306, 
+                    "db"    : "monitor"
+                }
+            }
+        ],
+    },
+            
+    {
+        "enable"   : False,
         "comment"  :"Analysis: Daily max or min user", 
         "type"     :"APP_RECORD",
         "module"   :"projectXuser", 
@@ -53,11 +75,12 @@ tasklist = [
     
     # Conference #
     {
+        "enable"   : False,
         "comment"  :"Collect: Total amount of conference", 
         "type"     :"APP_RECORD",
         "module"   :"projectXconference", 
         "func"     :"apprec_conf",
-        "interval" :30,
+        "interval" :300,
         "resources":[
             {
                 "mysql" : { 
@@ -77,6 +100,7 @@ tasklist = [
     },
 
     {
+        "enable"   : True,
         "comment"  :"Collect: Daily statistics including max/min number of conference", 
         "type"     :"APP_RECORD",
         "module"   :"projectXconference", 
@@ -97,6 +121,7 @@ tasklist = [
 
     # Files #
     {
+        "enable"   : False,
         "comment"  :"Collect: Number of daily created files",
         "type"     :"APP_RECORD",
         "module"   :"projectXfile", 

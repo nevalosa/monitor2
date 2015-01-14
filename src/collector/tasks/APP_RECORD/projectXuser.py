@@ -60,10 +60,72 @@ def apprec_user(resource=None):
     msgBody = common.fillMsgData(TARGET_TABLE, values)
     return msgBody
 
+def apprec_user_avg(resource=None):
+    '''
+        Calculate Average Data from 'apprec_user' to speedup long term chart display
+        -- Connect With Monitor --
+    '''
+    TARGET_TABLE='apprec_user'
+    DBCoon = db_mysql.connect(user=resource['mysql']['user'], 
+                              passwd=resource['mysql']['passwd'], 
+                              host=resource['mysql']['host'], 
+                              port=resource['mysql']['port'], 
+                              db=resource['mysql']['db'])
+
+    yesterday = common.lastday()
+   
+    # Get Data
+    mUser = db_mysql.Model('apprec_user',DBCoon)
+    
+    # check last day statistics data
+    strWhere = "type=2 and real_time='%s 23:59:59'" % (yesterday)
+    dataResult = mUser.field("id").where(strWhere).find()
+    # SQL error
+    if dataResult == False:
+        return False
+    if dataResult is not None:  # data already exists
+        return None
+
+    # Get last day normal data
+    strWhere = "type=0 and real_time>'%s 00:00:00' and real_time<='%s 23:59:59'" % (yesterday,yesterday)
+    dataResult = mUser.where(strWhere).select()
+    # SQL error
+    if dataResult == False:
+        return False
+    # No data
+    if dataResult is None:
+        return None
+
+    registerSum = 0
+    guestSum    = 0 
+    sipOnlineSum= 0
+    for val in dataResult:
+        registerSum += int(val['register_user'])
+        guestSum += int(val['guest_user'])
+        sipOnlineSum += int(val['sip_online_user'])
+        
+    registerAvg = int(registerSum / len(dataResult)) 
+    guestAvg    = int(guestSum / len(dataResult)) 
+    sipOnlineAvg= int(sipOnlineSum / len(dataResult)) 
+    
+    # Set Value
+    values = dict()
+    values['type'] = 2
+    values['real_time'] = "%s 23:59:59" % yesterday
+    values['register_user'] = registerAvg
+    values['guest_user'] = guestAvg
+    values['sip_online_user'] = sipOnlineAvg
+    
+    # fill message body
+    msgBody = common.fillMsgData(TARGET_TABLE, values)
+    return msgBody
+    
+    
 
 def apprec_user_statistics(resource=None):
     ''' 
         Daily Usr Datastatistics
+        -- Connect With Monitor --
     '''
     TARGET_TABLE='apprec_user_statistics'
     
@@ -121,7 +183,7 @@ def apprec_user_statistics(resource=None):
     
     # Set Value
     values = dict()
-    values['type'] = 0
+    values['type'] = 2
     values['real_time'] = "%s 23:59:59" % yesterday
     values['max_sip'] = MAX_SIP
     values['min_sip'] = MIN_SIP

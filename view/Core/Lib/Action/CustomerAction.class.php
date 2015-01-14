@@ -15,6 +15,10 @@ class CustomerAction extends CommonAction
     
     public function live()
     {
+        // Set Chart
+        $this->assign('yAxis_title', 'User Number');
+        
+        // Draw Temple
         $this->display();
     }
 }
