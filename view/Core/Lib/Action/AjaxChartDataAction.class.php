@@ -20,7 +20,8 @@ class AjaxChartDataAction extends CommonAction
         }
 
         // default 'Normal(0)', reference to "config.php's _RECORDDATATYPE" which is "C('_RECORDDATATYPE')"
-        $type   = empty($_REQUEST['type'])  ? '0'  : C('_RECORDDATATYPE')[$_REQUEST['type']];
+        $_RECDT =  C('_RECORDDATATYPE');
+        $type   = empty($_REQUEST['type'])  ? '0'  : $_RECDT[$_REQUEST['type']];
                 
         // conditions
         $cond = empty($_REQUEST['cond'])    ? ''   : $_REQUEST['cond'];
@@ -51,10 +52,10 @@ class AjaxChartDataAction extends CommonAction
             $GMT_UNIX_TS = gmmktime($MAP_T['hours'],$MAP_T['minutes'],$MAP_T['seconds'],$MAP_T['mon'],$MAP_T['mday'],$MAP_T['year']);
             
             if(empty($_REQUEST['h'])) // UTC Timestamp(microsecond)
-                $chart[] = [$GMT_UNIX_TS*1000, floatval($data["value"])];
+                $chart[] = array($GMT_UNIX_TS*1000, floatval($data["value"]));
             else //with 'h' param, use formatted time
                 #$chart[] = $data;
-                $chart[] = [$data["date"], floatval($data["value"])];
+                $chart[] = array($data["date"], floatval($data["value"]));
         }
         return json_encode($chart);
 

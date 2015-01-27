@@ -21,5 +21,12 @@ class CustomerAction extends CommonAction
         // Draw Temple
         $this->display();
     }
+    
+    public function statistics()
+    {
+    
+        // Draw Temple
+        $this->display();
+    }
 }
 ?>
