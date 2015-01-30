@@ -17,14 +17,14 @@ tasklist = [
         "resources": [
             {
                 "mysql" : { 
-                    "user"  : "gsdba", 
-                    "passwd": "yhnmkoert", 
-                    "host"  : "172.172.172.20", 
+                    "user"  : "dba", 
+                    "passwd": "123456", 
+                    "host"  : "127.0.0.1", 
                     "port"  : 3306, 
-                    "db"    : "gscf_user"
+                    "db"    : "user"
                 },
                 "redis" : { 
-                    "host"  : "172.172.172.20", 
+                    "host"  : "127.0.0.1", 
                     "port"  : 6379, 
                     "db"    : 0 
                 }
@@ -44,7 +44,7 @@ tasklist = [
                 "mysql" : { 
                     "user"  : "admin", 
                     "passwd": "admin", 
-                    "host"  : "192.168.126.8", 
+                    "host"  : "127.0.0.1", 
                     "port"  : 3306, 
                     "db"    : "monitor"
                 }
@@ -64,7 +64,7 @@ tasklist = [
                 "mysql" : { 
                     "user"  : "admin", 
                     "passwd": "admin", 
-                    "host"  : "192.168.126.8", 
+                    "host"  : "127.0.0.1", 
                     "port"  : 3306, 
                     "db"    : "monitor"
                 }
@@ -84,14 +84,14 @@ tasklist = [
         "resources":[
             {
                 "mysql" : { 
-                    "user"  : "gsdba", 
-                    "passwd": "yhnmkoert", 
-                    "host"  : "172.172.172.20", 
+                    "user"  : "dba", 
+                    "passwd": "123456", 
+                    "host"  : "127.0.0.1", 
                     "port"  : 3306, 
-                    "db"    : "gscf_conf"
+                    "db"    : "conf"
                 },
                 "redis" : { 
-                    "host"  : "172.172.172.20", 
+                    "host"  : "127.0.0.1", 
                     "port"  : 6379, 
                     "db"    : 0 
                 }
@@ -109,11 +109,11 @@ tasklist = [
         "resources":[
             {
                 "mysql" : { 
-                    "user"  : "gsdba", 
-                    "passwd": "yhnmkoert", 
-                    "host"  : "172.172.172.20", 
+                    "user"  : "dba", 
+                    "passwd": "123456", 
+                    "host"  : "127.0.0.1", 
                     "port"  : 3306, 
-                    "db"    : "gscf_conf"
+                    "db"    : "conf"
                 },
             }
         ],
@@ -130,11 +130,11 @@ tasklist = [
         "resources":[
                 {
                     "db" : { 
-                        "user"  : "gsdba", 
-                        "passwd": "yhnmkoert", 
-                        "host"  : "172.172.172.20", 
+                        "user"  : "dba", 
+                        "passwd": "123456", 
+                        "host"  : "127.0.0.1", 
                         "port"  : 3306, 
-                        "db"    : "gscf_file"
+                        "db"    : "file"
                     }
                 }
             ], 
